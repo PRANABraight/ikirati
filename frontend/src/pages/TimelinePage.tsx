@@ -1,6 +1,7 @@
 import React from 'react';
 import { Mountain, BookOpen, Users, Heart, Calendar } from 'lucide-react';
 import { timeline } from '../data';
+import KiratiOverview from '../components/KiratiOverview';
 
 export const TimelinePage: React.FC = () => {
   const getIcon = (iconName: string) => {
@@ -28,6 +29,9 @@ export const TimelinePage: React.FC = () => {
           </p>
         </div>
       </section>
+
+      {/* Kirati Overview Section */}
+      <KiratiOverview />
 
       {/* Timeline */}
       <section className="py-20 px-6">
@@ -81,44 +85,44 @@ export const TimelinePage: React.FC = () => {
                 <div className="text-green-700 leading-relaxed">
                   {index === 0 && (
                     <p>
-                      The first families arrived in our valley in the early 1800s, drawn by the fertile soil 
-                      and abundant water sources. They established the foundations of what would become our 
-                      thriving community, building the first homes and cultivating the land that would 
-                      sustain generations.
+                      The Kirati people are believed to be among the earliest inhabitants of the eastern Himalayan region, including present-day eastern Nepal and surrounding areas. Their ancestors settled in the hills and mountains, living in harmony with nature and developing a rich oral tradition that preserved their history, myths, and customs.
                     </p>
                   )}
                   {index === 1 && (
                     <p>
-                      As our community grew, the need to preserve and pass down traditional skills became 
-                      apparent. The crafts guild was formed to ensure that weaving, pottery, and woodworking 
-                      techniques would not be lost. Master craftspeople began formal apprenticeship programs 
-                      that continue to this day.
+                      Historical records and local legends mention the Kirati dynasty ruling parts of Nepal for several centuries. They were known as skilled warriors and rulers before the rise of the Shah dynasty. This era laid the foundation for Kirati cultural identity and governance.
                     </p>
                   )}
                   {index === 2 && (
                     <p>
-                      Economic opportunities in distant cities drew many young people away from the valley. 
-                      This migration brought new perspectives and connections to the outside world, but also 
-                      began the gradual erosion of daily traditional practices as families spread across 
-                      the region.
+                      During this period, the various Kirati clans such as Rai, Limbu, Yakkha, and Sunuwar solidified their distinct identities. They developed unique dialects, rituals, and social structures, while maintaining shared cultural elements like the Mundhum religious tradition.
                     </p>
                   )}
                   {index === 3 && (
                     <p>
-                      The passing of the last generation of native speakers marked a critical moment in our 
-                      cultural history. Recognizing the urgency, community leaders began recording elders 
-                      and documenting the language before it could be lost forever. This period sparked 
-                      the first organized preservation efforts.
+                      The Limbu scholar Sirijunga introduced and revived the Limbu script, enabling the Limbu people to write their language and preserve their oral literature. This was a significant step toward cultural preservation and literacy.
                     </p>
                   )}
                   {index === 4 && (
                     <p>
-                      A new generation of community members, many descendants of those who had migrated, 
-                      returned with a renewed appreciation for their heritage. They initiated comprehensive 
-                      documentation projects, established cultural education programs, and created this 
-                      digital archive to ensure our traditions survive and thrive.
+                      Kirati communities began organizing their traditional festivals such as Sakela and Udhauli-Ubhauli more formally. These festivals became central to community life, reinforcing social bonds and spiritual beliefs.
                     </p>
                   )}
+                  {index === 5 && (
+                    <p>
+Economic changes and educational opportunities led many Kirati youth to migrate to cities within Nepal and abroad. This migration brought exposure to new ideas but also challenged the transmission of traditional knowledge and language.                    </p>
+                  )}
+                  {index === 6 && (
+                    <p>
+The number of native Kirati language speakers began to decline significantly due to urbanization and assimilation pressures. Concerned elders and cultural activists started efforts to document and revive their languages and customs.                    </p>
+                  )}
+                  {index === 7 && (
+                    <p>
+Community organizations and scholars intensified work on preserving Kirati heritage through language classes, cultural programs, and academic research. Kirati music, dance, and rituals gained wider recognition.                    </p>
+                  )}
+                {index ===8 && (
+                  <p>A new generation of Kirati youth, both in Nepal and the diaspora, spearheaded cultural revival movements. They established digital archives, cultural schools, and advocacy groups to promote Kirati identity and seek political rights within Nepal’s federal system.</p>
+                )}
                 </div>
               </div>
             ))}

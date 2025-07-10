@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
-import { stories } from '../data';
+import { stories, stories1 } from '../data';
 
 export const StoriesPage: React.FC = () => {
   const [currentStory, setCurrentStory] = useState(0);
+  const [expandedStory, setExpandedStory] = useState<number | null>(null);
 
   return (
     <div className="pt-16">
@@ -84,7 +85,7 @@ export const StoriesPage: React.FC = () => {
           </h2>
           
           <div className="grid md:grid-cols-3 gap-8">
-            {stories.map((story, index) => (
+            {stories1.map((story, index) => (
               <div 
                 key={index} 
                 className={`bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl ${
@@ -101,8 +102,19 @@ export const StoriesPage: React.FC = () => {
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-green-900 mb-3">{story.title}</h3>
-                  <p className="text-green-700 mb-4 line-clamp-3">{story.text}</p>
-                  <p className="text-amber-600 font-semibold text-sm">— {story.author}</p>
+                  <p className={`text-green-700 mb-4 ${expandedStory === index ? '' : 'line-clamp-3'}`}>
+                    {expandedStory === index ? story.text : story.text}
+                  </p>
+                  <button
+                    className="bg-amber-600 text-white font-semibold text-sm focus:outline-none hover:bg-yellow-500 rounded-md px-2 py-1"
+                    onClick={e => {
+                      e.stopPropagation();
+                      setExpandedStory(expandedStory === index ? null : index);
+                    }}
+                  >
+                    {expandedStory === index ? 'Show Less' : 'Read More'}
+                  </button>
+                  <p className="text-amber-600 font-semibold text-sm mt-2"> {story.author}</p>
                 </div>
               </div>
             ))}

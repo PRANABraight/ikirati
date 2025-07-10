@@ -1,27 +1,66 @@
 export const stories = [
   {
-    image: "https://images.pexels.com/photos/1666021/pexels-photo-1666021.jpeg?auto=compress&cs=tinysrgb&w=800",
+    image: "/src/assets/festival1.jpg",
     title: "The Ancient Festivals",
     text: "Every harvest season, our ancestors would gather on the hilltops to celebrate the bounty of the land. These traditions connected us to the earth and each other.",
-    author: "Elder Maria Santos"
+    author: ""
   },
   {
-    image: "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg?auto=compress&cs=tinysrgb&w=800",
+    image: "/src/assets/mountain.jpg",
     title: "Songs of the Mountains",
     text: "The melodies passed down through generations tell stories of love, loss, and hope. They echo through our valleys like prayers to the wind.",
-    author: "José Rodriguez"
+    author: ""
   },
   {
-    image: "https://images.pexels.com/photos/1402407/pexels-photo-1402407.jpeg?auto=compress&cs=tinysrgb&w=800",
+    image: "/src/assets/craft.jpg",
     title: "Crafts of Our Grandmothers",
     text: "Each woven pattern, each carved symbol carries the wisdom of our people. These hands created beauty from the simplest materials.",
-    author: "Ana López"
+    author: ""
+  }
+];
+
+export const stories1 = [
+  {
+    image: "/src/assets/story.jpg",
+    title: "Sumnima and Paruhang",
+    text: `Long ago, before the mountains grew tall and the rivers carved their paths, there was only the vast sky and the fertile earth. The sky was ruled by Paruhang, the great sky god, powerful and wise, who watched over the heavens, the rain, and the spiritual realm. The earth was nurtured by Sumnima, the mother goddess, embodying fertility, prosperity, and the nurturing spirit of nature itself.
+
+Paruhang lived in the heavens, high above all creation, where the stars danced and the winds sang. One day, as he looked down upon the earth, his eyes fell upon Sumnima, who was tending to the forests, rivers, and fields. She was radiant, full of life and strength, the very spirit of the earth itself. Paruhang’s heart was moved by her beauty and grace, and he longed to be with her.
+
+Descending from the sky, Paruhang approached Sumnima and offered her gifts from the heavens—a beautiful comb woven from the light of the stars, and promises of eternal love and protection. Sumnima, wise and strong, accepted his love, and together they united—the sky and the earth joined in harmony.
+
+From their union, life blossomed. The forests grew lush, rivers flowed abundantly, and the first humans were born, carrying within them the spirit of both earth and sky. Sumnima gave birth to children who were strong and wise, who learned to live in balance with nature, guided by the teachings of their divine parents.
+
+But as time passed, Paruhang had to return to his place in the heavens. Sumnima remained on earth, nurturing the land and her children. Though separated, their bond remained unbroken. Sumnima, feeling the absence of Paruhang, gathered four sacred plants—Yonghang, Tingke, Nisum, and Nangthe—and fashioned a spiritual Yantra, a sacred symbol, to connect the earth to the sky, to remind her children of the eternal link between mother and father, earth and sky.
+
+This Yantra became a symbol of balance, harmony, and the cycle of life. It taught the Kirati people to honor both the heavens and the earth, to respect nature, and to live in unity with all living beings.
+
+The story of Sumnima and Paruhang is not just a tale of love; it is the foundation of our existence. It teaches us that the strength of the earth and the wisdom of the sky must always be in harmony. It reminds us to cherish our land, honor our ancestors, and live with humility and respect.
+
+Every year, during the festivals of Udhauli and Ubhauli, we remember this sacred bond. We dance, sing, and offer prayers to Sumnima and Paruhang, thanking them for the bounty of the earth and the blessings of the sky.
+
+So, my children, carry this story in your hearts. Let it guide you in your journey through life, just as it has guided our people for countless generations.
+
+This is the story of Sumnima and Paruhang—the eternal mother and father of the Kirati people.`,
+    author: ""
+  },
+  {
+    image: "/src/assets/mountain.jpg",
+    title: "Songs of the Mountains",
+    text: "The melodies passed down through generations tell stories of love, loss, and hope. They echo through our valleys like prayers to the wind.",
+    author: ""
+  },
+  {
+    image: "/src/assets/craft.jpg",
+    title: "Crafts of Our Grandmothers",
+    text: "Each woven pattern, each carved symbol carries the wisdom of our people. These hands created beauty from the simplest materials.",
+    author: ""
   }
 ];
 
 export const crafts = [
   {
-    image: "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg?auto=compress&cs=tinysrgb&w=800",
+    image: "/src/assets/weave.jpg",
     title: "Traditional Weaving",
     description: "Ancient patterns tell stories of seasons, celebrations, and sacred symbols",
     difficulty: "Advanced",
@@ -70,15 +109,24 @@ export const elders = [
   }
 ];
 
+
+
+
+
 export const timeline = [
-  { year: "1800s", event: "First settlements in the valley", icon: "Mountain" },
-  { year: "1920", event: "Establishment of traditional crafts guild", icon: "BookOpen" },
-  { year: "1950", event: "Great migration to the cities", icon: "Users" },
-  { year: "1980", event: "Loss of native language speakers", icon: "Heart" },
-  { year: "2020", event: "Cultural revival movement begins", icon: "Calendar" }
+  { year: "Ancient Times", event: "Origins and early settlements in the Himalayan region", icon: "Mountain" },
+  { year: "7th Century CE", event: "Kirati dynasty rules parts of Nepal", icon: "Sword" },
+  { year: "14th-17th Century", event: "Development of distinct Kirati clans and cultural practices", icon: "Users" },
+  { year: "18th Century", event: "Revival of Limbu script by Sirijunga", icon: "BookOpen" },
+  { year: "1920s", event: "Formalization of Kirati cultural festivals and rituals", icon: "Calendar" },
+  { year: "1950s", event: "Migration of Kirati youth to urban areas for education and work", icon: "World" },
+  { year: "1980s", event: "Decline in native language speakers and traditional practices", icon: "Decrease" },
+  { year: "2000s", event: "Renewed interest in Kirati identity and cultural preservation", icon: "Heart" },
+  { year: "2020s", event: "Cultural revival movement and political recognition efforts gain momentum", icon: "Heart" }
 ];
 
 export const upcomingEvents = [
+  
   {
     date: "March 15",
     title: "Spring Equinox Ceremony",

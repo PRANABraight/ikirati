@@ -9,6 +9,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { stories } from '../data';
+// import KiratiOverview from '../components/KiratiOverview';
 
 export const HomePage: React.FC = () => {
   const [currentStory, setCurrentStory] = useState(0);
@@ -43,28 +44,23 @@ export const HomePage: React.FC = () => {
             <span className="block text-amber-300">Heritage</span>
           </h1>
           <p className="text-xl md:text-2xl text-amber-100 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Before the hills forget our stories, before the wind carries away our songs, 
-            let us gather the threads of our culture and weave them into tomorrow.
+            Discover the story of the Kirati—indigenous people of the eastern Himalayas, renowned for their vibrant traditions, unique languages, and deep connection to nature.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
-              to="/stories"
+              to="#kirati-overview"
               className="bg-amber-500 hover:bg-amber-400 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg inline-flex items-center justify-center gap-2"
             >
-              Share Your Story
+              Learn More
               <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link 
-              to="/archive"
-              className="border-2 border-white text-white hover:bg-white hover:text-green-900 px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 inline-flex items-center justify-center"
-            >
-              Explore Heritage
             </Link>
           </div>
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-amber-50 to-transparent" />
       </section>
+
+      
 
       {/* Featured Stories Preview */}
       <section className="py-20 px-6">
@@ -129,19 +125,19 @@ export const HomePage: React.FC = () => {
                 title: "Traditional Crafts",
                 description: "Learn the ancient arts passed down through generations",
                 link: "/crafts",
-                image: "https://images.pexels.com/photos/1029604/pexels-photo-1029604.jpeg?auto=compress&cs=tinysrgb&w=600"
+                image: "/src/assets/bags.jpeg"
               },
               {
                 title: "Elder Wisdom",
                 description: "Listen to the voices of our community's living treasures",
                 link: "/elders",
-                image: "https://images.pexels.com/photos/1402407/pexels-photo-1402407.jpeg?auto=compress&cs=tinysrgb&w=600"
+                image: "/src/assets/elder.jpg"
               },
               {
                 title: "Cultural Archive",
                 description: "Access our collection of recipes, songs, and stories",
                 link: "/archive",
-                image: "https://images.pexels.com/photos/1666021/pexels-photo-1666021.jpeg?auto=compress&cs=tinysrgb&w=600"
+                image: "/src/assets/cultur.webp"
               }
             ].map((item, index) => (
               <Link

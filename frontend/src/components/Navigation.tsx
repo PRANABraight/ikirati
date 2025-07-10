@@ -23,9 +23,9 @@ export const Navigation: React.FC = () => {
     { path: '/elders', label: 'Elders' },
     { path: '/archive', label: 'Archive' },
     { path: '/language', label: 'Language' },
-    { path: '/events', label: 'Events' },
+    // { path: '/events', label: 'Events' },
     { path: '/timeline', label: 'Timeline' },
-    { path: '/gallery', label: 'Gallery' }
+    // { path: '/gallery', label: 'Gallery' }
   ];
 
   const isHomePage = location.pathname === '/';
