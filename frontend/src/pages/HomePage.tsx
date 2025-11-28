@@ -9,8 +9,7 @@ import { Link } from 'react-router-dom';
 
 import {
   Heart,
-  Users,
-  Camera,
+
   Mail,
   ArrowRight,
   Music,

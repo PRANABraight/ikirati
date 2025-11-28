@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Calendar } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { timeline } from '../data';
 
 interface TimelineModalProps {

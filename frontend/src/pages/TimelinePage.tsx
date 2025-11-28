@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Mountain, BookOpen, Users, Heart, Calendar } from 'lucide-react';
 import { timeline } from '../data';
-import YalambarImage from '../assets/couple.jpg';
+import YalambarImage from '../assets/couple.webp';
 import KiratiOverview from '../components/KiratiOverview';
 import { ScrollRevealSection } from '../components/ScrollReveal';
 import { TimelineModal } from '../components/TimelineModal';

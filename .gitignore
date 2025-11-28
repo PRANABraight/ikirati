@@ -1,3 +1,5 @@
 /backend
 /frontend/node_modules
 /frontend/nul
+/backend/node_modules
+/backend/.env

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import craftImage from '../assets/craft.jpg';
+import craftImage from '../assets/craft.webp';
 import { Clock } from 'lucide-react';
 import { crafts } from '../data';
 import { ScrollRevealSection } from '../components/ScrollReveal';

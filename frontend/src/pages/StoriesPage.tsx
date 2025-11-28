@@ -3,7 +3,7 @@ import { stories, stories1 } from '../data';
 import { BookOpen, User, Clock, ArrowRight, Quote, Share2 } from 'lucide-react';
 import { ScrollRevealSection } from '../components/ScrollReveal';
 import { StoryModal } from '../components/StoryModal';
-import danceImage from '../assets/dance.png';
+import danceImage from '../assets/dance.webp';
 
 export const StoriesPage: React.FC = () => {
   const [selectedStory, setSelectedStory] = useState<typeof stories[0] | null>(null);

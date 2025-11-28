@@ -1,10 +1,10 @@
-import festival1 from '../assets/festival1.jpg';
-import mountain from '../assets/mountain.jpg';
-import craft from '../assets/craft.jpg';
-import story from '../assets/story.jpg';
-import flood from '../assets/flood2.jpg';
-import weave from '../assets/weave.jpg';
-import hetch from '../assets/hecch.jpg'
+import festival1 from '../assets/festival1.webp';
+import mountain from '../assets/mountain.webp';
+import craft from '../assets/craft.webp';
+import story from '../assets/story.webp';
+import flood from '../assets/flood2.webp';
+import weave from '../assets/weave.webp';
+import hetch from '../assets/hecch.webp'
 
 export const stories = [
   {
@@ -23,7 +23,7 @@ export const stories = [
     image: craft,
     title: "Crafts of Our Grandmothers",
     text: "Each woven pattern, each carved symbol carries the wisdom of our people. These hands created beauty from the simplest materials.",
-    author: "ang"
+    author: "Hang"
   }
 ];
 

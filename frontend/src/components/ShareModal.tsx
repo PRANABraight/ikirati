@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Copy, Facebook, Twitter, Mail, Link } from 'lucide-react';
+import { X, Copy, Facebook, Mail, Link } from 'lucide-react';
 
 interface ShareModalProps {
   isOpen: boolean;

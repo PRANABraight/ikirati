@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mountain, Facebook, Twitter, Instagram, Mail } from 'lucide-react';
+import { Mountain, Facebook, Twitter, Instagram } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
