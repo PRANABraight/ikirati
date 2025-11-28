@@ -1,6 +1,6 @@
 import festival1 from '../assets/festival1.webp';
 import mountain from '../assets/mountain.webp';
-import craft from '../assets/craft.webp';
+import kiraticraft from '../assets/kiraticraft.webp';
 import story from '../assets/story.webp';
 import flood from '../assets/flood2.webp';
 import weave from '../assets/weave.webp';
@@ -20,7 +20,7 @@ export const stories = [
     author: "Hang"
   },
   {
-    image: craft,
+    image: kiraticraft,
     title: "Crafts of Our Grandmothers",
     text: "Each woven pattern, each carved symbol carries the wisdom of our people. These hands created beauty from the simplest materials.",
     author: "Hang"
