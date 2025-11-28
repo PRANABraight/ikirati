@@ -6,7 +6,7 @@ interface Story {
     title: string;
     text: string;
     author: string;
-    date?: string;
+    link?: string;
 }
 
 interface StoryModalProps {
@@ -68,10 +68,22 @@ export const StoryModal: React.FC<StoryModalProps> = ({ isOpen, onClose, story }
                         ))}
                     </div>
 
-                    <div className="mt-12 pt-8 border-t border-amber-100 flex justify-center">
+                    <div className="mt-12 pt-8 border-t border-amber-100 flex flex-col items-center gap-6">
                         <p className="text-amber-700 italic font-medium">
                             ~ End of Story ~
                         </p>
+
+                        {story.link && (
+                            <a
+                                href={story.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-green-900 text-white rounded-full hover:bg-green-800 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                            >
+                                Learn More
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-external-link"><path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></svg>
+                            </a>
+                        )}
                     </div>
                 </div>
             </div>

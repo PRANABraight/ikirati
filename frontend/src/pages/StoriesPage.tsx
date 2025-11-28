@@ -3,6 +3,7 @@ import { stories, stories1 } from '../data';
 import { BookOpen, User, Clock, ArrowRight, Quote, Share2 } from 'lucide-react';
 import { ScrollRevealSection } from '../components/ScrollReveal';
 import { StoryModal } from '../components/StoryModal';
+import danceImage from '../assets/dance.png';
 
 export const StoriesPage: React.FC = () => {
   const [selectedStory, setSelectedStory] = useState<typeof stories[0] | null>(null);
@@ -22,7 +23,7 @@ export const StoriesPage: React.FC = () => {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('https://images.pexels.com/photos/3756766/pexels-photo-3756766.jpeg?auto=compress&cs=tinysrgb&w=1600')"
+            backgroundImage: `url(${danceImage})`,
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-green-950/90 via-green-900/70 to-amber-50" />

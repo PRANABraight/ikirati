@@ -1,15 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { Mountain, BookOpen, Users, Heart, Calendar } from 'lucide-react';
 import { timeline } from '../data';
-import YalambarImage from '../assets/Yalambar.jpg';
+import YalambarImage from '../assets/couple.jpg';
 import KiratiOverview from '../components/KiratiOverview';
 import { ScrollRevealSection } from '../components/ScrollReveal';
+import { TimelineModal } from '../components/TimelineModal';
 
 export const TimelinePage: React.FC = () => {
   const [scrollY, setScrollY] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [selectedEvent, setSelectedEvent] = useState<typeof timeline[0] | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+
+      // Calculate scroll progress for the timeline section
+      const timelineSection = document.getElementById('timeline-section');
+      if (timelineSection) {
+        const { top, height } = timelineSection.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        const progress = Math.min(Math.max((windowHeight - top) / (height + windowHeight) * 100, 0), 100);
+        setScrollProgress(progress);
+      }
+    };
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -27,6 +42,14 @@ export const TimelinePage: React.FC = () => {
 
   return (
     <div className="overflow-x-hidden">
+      {/* Scroll Progress Bar */}
+      <div className="fixed top-0 left-0 w-full h-1.5 z-50 bg-gray-200/20 backdrop-blur-sm">
+        <div
+          className="h-full bg-gradient-to-r from-amber-400 to-green-600 transition-all duration-100 ease-out"
+          style={{ width: `${scrollProgress}%` }}
+        />
+      </div>
+
       {/* Parallax Hero Section */}
       <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
         <div
@@ -62,149 +85,178 @@ export const TimelinePage: React.FC = () => {
       {/* Kirati Overview Section */}
       <KiratiOverview />
 
-      {/* Timeline */}
-      <section className="py-24 px-6 bg-amber-50 relative overflow-hidden">
+      {/* Timeline - Snake Layout */}
+      <section id="timeline-section" className="py-24 px-6 bg-amber-50 relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5 bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')]"></div>
 
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div className="relative">
-            {/* Center Line (Desktop) / Left Line (Mobile) */}
-            <div className="absolute left-8 md:left-1/2 transform md:-translate-x-1/2 w-1 h-full bg-gradient-to-b from-amber-200 via-amber-500 to-amber-200 rounded-full opacity-30" />
-            <div className="absolute left-8 md:left-1/2 transform md:-translate-x-1/2 w-1 h-1/3 bg-gradient-to-b from-amber-500 to-transparent rounded-full" />
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="hidden md:block">
+            {/* Desktop Snake Layout */}
+            {Array.from({ length: Math.ceil(timeline.length / 3) }).map((_, rowIndex) => {
+              const startIdx = rowIndex * 3;
+              const endIdx = Math.min(startIdx + 3, timeline.length);
+              const rowItems = timeline.slice(startIdx, endIdx);
+              const isEvenRow = rowIndex % 2 === 0;
+              const isLastRow = rowIndex === Math.ceil(timeline.length / 3) - 1;
 
-            <div className="space-y-16 md:space-y-32">
+              // Reverse items for odd rows to create the snake effect visually
+              const displayItems = isEvenRow ? rowItems : [...rowItems].reverse();
+
+              return (
+                <div key={rowIndex} className="relative mb-24 last:mb-0">
+                  {/* Connecting Curves */}
+                  {!isLastRow && (
+                    <div className={`absolute top-1/2 w-24 h-48 border-[6px] border-amber-200/60 rounded-${isEvenRow ? 'r' : 'l'}-full 
+                      ${isEvenRow ? 'right-0 border-l-0 translate-x-1/2' : 'left-0 border-r-0 -translate-x-1/2'} 
+                      -z-10 shadow-sm`}
+                      style={{ top: '50%' }}
+                    />
+                  )}
+
+                  <div className={`flex justify-between items-start gap-8 ${!isEvenRow ? 'flex-row-reverse' : ''}`}>
+                    {displayItems.map((item, idx) => {
+                      // Robust check for first and last items in the timeline
+                      const isFirstItem = item === timeline[0];
+                      const isLastItem = item === timeline[timeline.length - 1];
+
+                      return (
+                        <ScrollRevealSection
+                          key={idx}
+                          className={`flex-1 w-full max-w-[30%] ${isFirstItem ? 'mt-20' : ''} ${isLastItem ? 'mb-20' : ''}`}
+                        >
+                          <div className="relative flex flex-col items-center">
+                            {/* Start Marker (Desktop) */}
+                            {isFirstItem && (
+                              <div className="absolute -top-24 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center animate-bounce-slow">
+                                <div className="bg-gradient-to-br from-amber-500 to-amber-600 text-white px-6 py-2 rounded-full shadow-lg shadow-amber-500/30 font-bold text-sm tracking-wider uppercase flex items-center gap-2 border-4 border-amber-100 whitespace-nowrap">
+                                  <Mountain className="w-4 h-4" />
+                                  Origins
+                                </div>
+                                <div className="w-1 h-8 bg-gradient-to-b from-amber-500 to-amber-200 opacity-60" />
+                              </div>
+                            )}
+
+                            <div
+                              className="group relative cursor-pointer perspective-1000 w-full"
+                              onClick={() => setSelectedEvent(item)}
+                            >
+                              {/* Connector Line */}
+                              <div className={`absolute top-8 left-0 w-full h-[6px] bg-amber-200/60 -z-10 ${
+                                // Logic to hide connector for first/last items in row appropriately
+                                (isEvenRow && idx === 0 && rowIndex === 0) ? 'hidden' : ''
+                                }`} />
+
+                              <div className="bg-gradient-to-br from-white via-white to-amber-50/50 backdrop-blur-md p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-500 border border-white/60 group-hover:border-amber-200/60 transform group-hover:-translate-y-2 h-full min-h-[320px] flex flex-col relative overflow-hidden">
+
+                                {/* Decorative background blob */}
+                                <div className="absolute -top-20 -right-20 w-40 h-40 bg-amber-100/50 rounded-full blur-3xl group-hover:bg-amber-200/40 transition-colors duration-500" />
+
+                                <div className="flex items-center justify-between mb-6 relative z-10">
+                                  <div className="p-3.5 bg-gradient-to-br from-amber-100 to-amber-50 rounded-2xl text-amber-600 group-hover:from-amber-500 group-hover:to-amber-600 group-hover:text-white transition-all duration-500 shadow-sm group-hover:shadow-md group-hover:scale-110">
+                                    {getIcon(item.icon)}
+                                  </div>
+                                  <span className="text-3xl font-bold text-green-950 font-serif tracking-tight">{item.year}</span>
+                                </div>
+
+                                <h3 className="text-xl font-bold text-green-900 mb-4 leading-tight group-hover:text-amber-700 transition-colors duration-300 relative z-10">{item.event}</h3>
+                                <p className="text-green-700/80 text-sm leading-relaxed mb-6 relative z-10">
+                                  {item.description ? item.description.substring(0, 90) + "..." : "A pivotal moment in our history."}
+                                </p>
+
+                                {/* Dot on the line */}
+                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 bg-amber-500 rounded-full border-[6px] border-white shadow-lg z-20 group-hover:scale-110 transition-transform duration-300" />
+
+                                <div className="mt-auto pt-4 flex items-center text-amber-600 text-sm font-bold opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 relative z-10">
+                                  <span className="border-b-2 border-amber-200 group-hover:border-amber-500 pb-0.5 transition-colors">Read Full Story</span>
+                                  <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* End Marker (Desktop) */}
+                            {isLastItem && (
+                              <div className="absolute -bottom-24 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center">
+                                <div className="w-1 h-8 bg-gradient-to-t from-green-600 to-amber-200 opacity-60" />
+                                <div className="bg-gradient-to-br from-green-600 to-green-700 text-white px-6 py-2 rounded-full shadow-lg shadow-green-600/30 font-bold text-sm tracking-wider uppercase flex items-center gap-2 border-4 border-green-100 whitespace-nowrap animate-pulse-slow">
+                                  <Calendar className="w-4 h-4" />
+                                  Present Day
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </ScrollRevealSection>
+                      );
+                    })}
+
+                    {/* Fill empty spots in row to maintain grid structure */}
+                    {Array.from({ length: 3 - displayItems.length }).map((_, i) => (
+                      <div key={`empty-${i}`} className="flex-1" />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Mobile Vertical Layout */}
+          <div className="md:hidden relative pt-24 pb-24">
+            <div className="absolute left-8 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-200 via-amber-500 to-amber-200 opacity-30" />
+
+            {/* Start Marker (Mobile) */}
+            <div className="absolute top-4 left-8 -translate-x-1/2 z-20 flex flex-col items-center">
+              <div className="bg-gradient-to-br from-amber-500 to-amber-600 text-white p-2 rounded-full shadow-lg border-2 border-white">
+                <Mountain className="w-4 h-4" />
+              </div>
+              <div className="text-xs font-bold text-amber-600 mt-1 uppercase tracking-wider bg-white/80 backdrop-blur-sm px-2 py-0.5 rounded-full">Origins</div>
+            </div>
+
+            <div className="space-y-12 pt-8">
               {timeline.map((item, index) => (
                 <ScrollRevealSection key={index}>
-                  <div className={`flex flex-col md:flex-row items-center ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'} relative group`}>
+                  <div
+                    className="relative pl-20 cursor-pointer"
+                    onClick={() => setSelectedEvent(item)}
+                  >
+                    {/* Connector */}
+                    <div className="absolute left-8 top-8 w-12 h-0.5 bg-amber-300" />
+                    {/* Dot */}
+                    <div className="absolute left-[29px] top-6 w-4 h-4 bg-amber-500 rounded-full border-2 border-white shadow-md z-10" />
 
-                    {/* Content Card */}
-                    <div className={`w-full md:w-1/2 pl-20 md:pl-0 ${index % 2 === 0 ? 'md:pr-16 md:text-right' : 'md:pl-16 md:text-left'} text-left`}>
-                      <div className="bg-white/80 backdrop-blur-sm p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 border border-amber-100 group-hover:border-amber-300 relative transform group-hover:-translate-y-1">
+                    <div className="bg-gradient-to-br from-white via-white to-amber-50/50 backdrop-blur-md p-6 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] active:scale-95 transition-all duration-300 border border-white/60 relative overflow-hidden">
 
-                        {/* Decorative Corner */}
-                        <div className={`absolute top-0 w-16 h-16 border-t-4 border-amber-200 transition-all duration-500 group-hover:border-amber-500 ${index % 2 === 0 ? 'right-0 border-r-4 rounded-tr-3xl' : 'left-0 border-l-4 rounded-tl-3xl'}`} />
+                      {/* Decorative background blob */}
+                      <div className="absolute -top-10 -right-10 w-24 h-24 bg-amber-100/50 rounded-full blur-2xl" />
 
-                        {/* Connector Line (Desktop) */}
-                        <div className={`hidden md:block absolute top-1/2 -translate-y-1/2 w-16 h-0.5 bg-gradient-to-r from-amber-300 to-amber-500 ${index % 2 === 0 ? '-right-16' : '-left-16'}`} />
-
-                        {/* Connector Line (Mobile) */}
-                        <div className="md:hidden absolute top-10 -left-12 w-12 h-0.5 bg-amber-300" />
-
-                        <div className={`flex items-center gap-4 mb-6 ${index % 2 === 0 ? 'md:justify-end' : 'md:justify-start'} justify-start`}>
-                          <div className="p-4 bg-gradient-to-br from-amber-100 to-amber-50 rounded-2xl text-amber-600 group-hover:bg-amber-500 group-hover:text-white transition-all duration-500 shadow-inner group-hover:shadow-lg group-hover:rotate-6">
-                            {getIcon(item.icon)}
-                          </div>
-                          <span className="text-3xl md:text-4xl font-bold text-green-900 font-serif">{item.year}</span>
+                      <div className="flex items-center gap-4 mb-4 relative z-10">
+                        <div className="p-2.5 bg-gradient-to-br from-amber-100 to-amber-50 rounded-xl text-amber-600 shadow-sm">
+                          {getIcon(item.icon)}
                         </div>
-                        <h3 className="text-xl md:text-2xl font-bold text-amber-700 mb-4">{item.event}</h3>
-                        <p className="text-green-800 leading-relaxed text-base md:text-lg opacity-80 group-hover:opacity-100 transition-opacity">
-                          A pivotal moment in our history that shaped the generations to come.
-                        </p>
+                        <span className="text-2xl font-bold text-green-950 font-serif tracking-tight">{item.year}</span>
+                      </div>
+
+                      <h3 className="text-lg font-bold text-green-900 mb-2 relative z-10">{item.event}</h3>
+                      <p className="text-green-700/80 text-sm leading-relaxed mb-4 relative z-10">
+                        {item.description ? item.description.substring(0, 80) + "..." : "Tap to read more details."}
+                      </p>
+
+                      <div className="flex items-center text-amber-600 text-xs font-bold uppercase tracking-wider relative z-10">
+                        Read Story <span className="ml-1">→</span>
                       </div>
                     </div>
-
-                    {/* Center Dot */}
-                    <div className="absolute left-8 md:left-1/2 transform -translate-x-1/2 md:relative md:translate-x-0 md:left-auto z-10 top-10 md:top-auto">
-                      <div className="relative">
-                        <div className="w-6 h-6 bg-amber-500 rounded-full border-4 border-white shadow-lg z-10 relative group-hover:scale-125 transition-transform duration-500" />
-                        <div className="absolute inset-0 bg-amber-400 rounded-full animate-ping opacity-20 group-hover:opacity-60" />
-                      </div>
-                    </div>
-
-                    {/* Spacer for Desktop */}
-                    <div className="hidden md:block w-1/2" />
                   </div>
                 </ScrollRevealSection>
               ))}
             </div>
+
+            {/* End Marker (Mobile) */}
+            <div className="absolute bottom-4 left-8 -translate-x-1/2 z-20 flex flex-col items-center">
+              <div className="text-xs font-bold text-green-700 mb-1 uppercase tracking-wider bg-white/80 backdrop-blur-sm px-2 py-0.5 rounded-full">Present</div>
+              <div className="bg-gradient-to-br from-green-600 to-green-700 text-white p-2 rounded-full shadow-lg border-2 border-white">
+                <Calendar className="w-4 h-4" />
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
-
-      {/* Detailed History */}
-      <section className="py-24 px-6 bg-white relative">
-        <div className="max-w-5xl mx-auto">
-          <ScrollRevealSection>
-            <div className="text-center mb-20">
-              <h2 className="text-4xl md:text-5xl font-bold text-green-900 mb-6 font-serif">
-                Detailed History
-              </h2>
-              <div className="w-24 h-1 bg-amber-500 mx-auto rounded-full" />
-            </div>
-
-            <div className="space-y-16">
-              {timeline.map((item, index) => (
-                <div key={index} className="flex flex-col md:flex-row gap-8 md:gap-12 group">
-                  <div className="flex flex-col items-center md:w-1/4">
-                    <div className="p-6 bg-green-50 rounded-3xl text-green-600 group-hover:bg-green-800 group-hover:text-white transition-all duration-500 shadow-md group-hover:shadow-xl transform group-hover:rotate-3">
-                      {getIcon(item.icon)}
-                    </div>
-                    <div className="w-0.5 h-full bg-gradient-to-b from-green-100 to-transparent my-6 group-hover:from-green-300 transition-colors" />
-                  </div>
-                  <div className="md:w-3/4 pb-12 border-b border-green-50 last:border-0">
-                    <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
-                      <h3 className="text-3xl font-bold text-green-900 font-serif">
-                        {item.year}
-                      </h3>
-                      <span className="hidden md:block text-green-300">•</span>
-                      <span className="text-lg font-medium text-amber-600 px-4 py-1 bg-amber-50 rounded-full self-start">
-                        {item.event}
-                      </span>
-                    </div>
-
-                    <div className="text-green-800 leading-loose text-lg pl-6 border-l-4 border-green-100 group-hover:border-amber-500 transition-all duration-500 bg-green-50/30 p-6 rounded-r-2xl">
-                      {index === 0 && (
-                        <p>
-                          The Kirati people are believed to be among the earliest inhabitants of the eastern Himalayan region, including present-day eastern Nepal and surrounding areas. Their ancestors settled in the hills and mountains, living in harmony with nature and developing a rich oral tradition that preserved their history, myths, and customs.
-                        </p>
-                      )}
-                      {index === 1 && (
-                        <p>
-                          Historical records and local legends mention the Kirati dynasty ruling parts of Nepal for several centuries. They were known as skilled warriors and rulers before the rise of the Shah dynasty. This era laid the foundation for Kirati cultural identity and governance.
-                        </p>
-                      )}
-                      {index === 2 && (
-                        <p>
-                          During this period, the various Kirati clans such as Rai, Limbu, Yakkha, and Sunuwar solidified their distinct identities. They developed unique dialects, rituals, and social structures, while maintaining shared cultural elements like the Mundhum religious tradition.
-                        </p>
-                      )}
-                      {index === 3 && (
-                        <p>
-                          The Limbu scholar Sirijunga introduced and revived the Limbu script, enabling the Limbu people to write their language and preserve their oral literature. This was a significant step toward cultural preservation and literacy.
-                        </p>
-                      )}
-                      {index === 4 && (
-                        <p>
-                          Kirati communities began organizing their traditional festivals such as Sakela and Udhauli-Ubhauli more formally. These festivals became central to community life, reinforcing social bonds and spiritual beliefs.
-                        </p>
-                      )}
-                      {index === 5 && (
-                        <p>
-                          Economic changes and educational opportunities led many Kirati youth to migrate to cities within Nepal and abroad. This migration brought exposure to new ideas but also challenged the transmission of traditional knowledge and language.
-                        </p>
-                      )}
-                      {index === 6 && (
-                        <p>
-                          The number of native Kirati language speakers began to decline significantly due to urbanization and assimilation pressures. Concerned elders and cultural activists started efforts to document and revive their languages and customs.
-                        </p>
-                      )}
-                      {index === 7 && (
-                        <p>
-                          Community organizations and scholars intensified work on preserving Kirati heritage through language classes, cultural programs, and academic research. Kirati music, dance, and rituals gained wider recognition.
-                        </p>
-                      )}
-                      {index === 8 && (
-                        <p>
-                          A new generation of Kirati youth, both in Nepal and the diaspora, spearheaded cultural revival movements. They established digital archives, cultural schools, and advocacy groups to promote Kirati identity and seek political rights within Nepal’s federal system.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </ScrollRevealSection>
         </div>
       </section>
 
@@ -227,6 +279,14 @@ export const TimelinePage: React.FC = () => {
           </ScrollRevealSection>
         </div>
       </section>
+
+      {/* Timeline Modal */}
+      <TimelineModal
+        isOpen={!!selectedEvent}
+        onClose={() => setSelectedEvent(null)}
+        event={selectedEvent}
+        icon={selectedEvent ? getIcon(selectedEvent.icon) : null}
+      />
     </div>
   );
 };

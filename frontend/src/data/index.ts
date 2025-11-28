@@ -2,26 +2,28 @@ import festival1 from '../assets/festival1.jpg';
 import mountain from '../assets/mountain.jpg';
 import craft from '../assets/craft.jpg';
 import story from '../assets/story.jpg';
+import flood from '../assets/flood2.jpg';
 import weave from '../assets/weave.jpg';
+import hetch from '../assets/hecch.jpg'
 
 export const stories = [
   {
     image: festival1,
     title: "The Ancient Festivals",
     text: "Every harvest season, our ancestors would gather on the hilltops to celebrate the bounty of the land. These traditions connected us to the earth and each other.",
-    author: ""
+    author: "Hang"
   },
   {
     image: mountain,
     title: "Songs of the Mountains",
     text: "The melodies passed down through generations tell stories of love, loss, and hope. They echo through our valleys like prayers to the wind.",
-    author: ""
+    author: "Hang"
   },
   {
     image: craft,
     title: "Crafts of Our Grandmothers",
     text: "Each woven pattern, each carved symbol carries the wisdom of our people. These hands created beauty from the simplest materials.",
-    author: ""
+    author: "ang"
   }
 ];
 
@@ -48,20 +50,39 @@ Every year, during the festivals of Udhauli and Ubhauli, we remember this sacred
 So, my children, carry this story in your hearts. Let it guide you in your journey through life, just as it has guided our people for countless generations.
 
 This is the story of Sumnima and Paruhang—the eternal mother and father of the Kirati people.`,
-    author: ""
+    author: "Hang",
+    link: "https://en.wikipedia.org/wiki/Kirat_Mundhum"
+  },
+
+
+  {
+    image: hetch,
+    title: "Hetchhakuppa, Tayama & Khiyama",
+    text: `In a time long past, a young orphan boy named Hetchhakuppa lived in the dense forests of Kirat land. Abandoned and alone, he was a clever and brave child who survived by hunting and fishing with the guidance of his animal friends.
+
+One day, Hetchhakuppa encountered the demon Chaklundhima, a terrifying being who disturbed the peace of the forest and frightened the villagers. Despite his youth, Hetchhakuppa was fearless. Using his wit and courage, he learned the tricks of hunting and fishing from the demon, slowly mastering the skills needed to protect his people.
+
+Along with his friends Tayama and Khiyama, he set out on adventures that taught lessons of resilience, the importance of family, and living in harmony with nature. Their stories spread from village to village, passed down through generations as moral and inspiring folk tales.
+
+Hetchhakuppa's journey is celebrated as a symbol of overcoming hardship through bravery, wisdom, and unity. The tale reminds the Kirati people, young and old alike, of the strength found in community and the knowledge shared with the natural world.`,
+    author: "Hang",
+    link: "https://www.youtube.com/watch?v=yll4o8bkojo"
   },
   {
-    image: mountain,
-    title: "Songs of the Mountains",
-    text: "The melodies passed down through generations tell stories of love, loss, and hope. They echo through our valleys like prayers to the wind.",
-    author: ""
+    image: flood,
+    title: "Lepmuhang Mundhum (The Great Flood)",
+    text: `In ancient times, when the Kirati ancestors roamed the lush valleys and high mountains, a terrible flood swept across the land, sent by the wrathful spirits of the rivers and seas. The waters rose relentlessly, swallowing villages, forests, and all living creatures in their path.
+
+Amid the chaos, a wise survivor named Lepmu, forewarned by dreams from the gods, built a sturdy boat from sacred trees. He gathered his family, animals of every kind, and seeds of all plants, embarking on a perilous journey across the raging waters. For days and nights, they floated, facing storms and monstrous sea beasts, sustained by Lepmu's faith and the guidance of Paruhang from the skies.
+
+Finally, the boat came to rest on the peak of a towering mountain. As the waters receded, Lepmu and his kin repopulated the earth, founding the Limbu clans. They learned to honor the rivers, plant the seeds, and live in balance with nature's fury and bounty, establishing rituals to prevent future cataclysms.
+
+This epic flood tale from the Mundhum teaches the Kirati people about survival, divine intervention, renewal, and the sacred duty to protect the environment and pass on ancestral wisdom through generations.`,
+    author: "Hang",
+    link: "https://nrsubba.com.np/review-lepmuhang-mundhum/"
+
   },
-  {
-    image: craft,
-    title: "Crafts of Our Grandmothers",
-    text: "Each woven pattern, each carved symbol carries the wisdom of our people. These hands created beauty from the simplest materials.",
-    author: ""
-  }
+
 ];
 
 export const crafts = [
@@ -120,15 +141,60 @@ export const elders = [
 
 
 export const timeline = [
-  { year: "Ancient Times", event: "Origins and early settlements in the Himalayan region", icon: "Mountain" },
-  { year: "7th Century CE", event: "Kirati dynasty rules parts of Nepal", icon: "Sword" },
-  { year: "14th-17th Century", event: "Development of distinct Kirati clans and cultural practices", icon: "Users" },
-  { year: "18th Century", event: "Revival of Limbu script by Sirijunga", icon: "BookOpen" },
-  { year: "1920s", event: "Formalization of Kirati cultural festivals and rituals", icon: "Calendar" },
-  { year: "1950s", event: "Migration of Kirati youth to urban areas for education and work", icon: "World" },
-  { year: "1980s", event: "Decline in native language speakers and traditional practices", icon: "Decrease" },
-  { year: "2000s", event: "Renewed interest in Kirati identity and cultural preservation", icon: "Heart" },
-  { year: "2020s", event: "Cultural revival movement and political recognition efforts gain momentum", icon: "Heart" }
+  {
+    year: "Ancient Times",
+    event: "Origins and early settlements in the Himalayan region",
+    icon: "Mountain",
+    description: "The Kirati people are believed to be among the earliest inhabitants of the eastern Himalayan region, including present-day eastern Nepal and surrounding areas. Their ancestors settled in the hills and mountains, living in harmony with nature and developing a rich oral tradition that preserved their history, myths, and customs."
+  },
+  {
+    year: "7th Century CE",
+    event: "Kirati dynasty rules parts of Nepal",
+    icon: "Sword",
+    description: "Historical records and local legends mention the Kirati dynasty ruling parts of Nepal for several centuries. They were known as skilled warriors and rulers before the rise of the Shah dynasty. This era laid the foundation for Kirati cultural identity and governance."
+  },
+  {
+    year: "14th-17th Century",
+    event: "Development of distinct Kirati clans and cultural practices",
+    icon: "Users",
+    description: "During this period, the various Kirati clans such as Rai, Limbu, Yakkha, and Sunuwar solidified their distinct identities. They developed unique dialects, rituals, and social structures, while maintaining shared cultural elements like the Mundhum religious tradition."
+  },
+  {
+    year: "18th Century",
+    event: "Revival of Limbu script by Sirijunga",
+    icon: "BookOpen",
+    description: "The Limbu scholar Sirijunga introduced and revived the Limbu script, enabling the Limbu people to write their language and preserve their oral literature. This was a significant step toward cultural preservation and literacy."
+  },
+  {
+    year: "1920s",
+    event: "Formalization of Kirati cultural festivals and rituals",
+    icon: "Calendar",
+    description: "Kirati communities began organizing their traditional festivals such as Sakela and Udhauli-Ubhauli more formally. These festivals became central to community life, reinforcing social bonds and spiritual beliefs."
+  },
+  {
+    year: "1950s",
+    event: "Migration of Kirati youth to urban areas for education and work",
+    icon: "World",
+    description: "Economic changes and educational opportunities led many Kirati youth to migrate to cities within Nepal and abroad. This migration brought exposure to new ideas but also challenged the transmission of traditional knowledge and language."
+  },
+  {
+    year: "1980s",
+    event: "Decline in native language speakers and traditional practices",
+    icon: "Decrease",
+    description: "The number of native Kirati language speakers began to decline significantly due to urbanization and assimilation pressures. Concerned elders and cultural activists started efforts to document and revive their languages and customs."
+  },
+  {
+    year: "2000s",
+    event: "Renewed interest in Kirati identity and cultural preservation",
+    icon: "Heart",
+    description: "Community organizations and scholars intensified work on preserving Kirati heritage through language classes, cultural programs, and academic research. Kirati music, dance, and rituals gained wider recognition."
+  },
+  {
+    year: "2020s",
+    event: "Cultural revival movement and political recognition efforts gain momentum",
+    icon: "Heart",
+    description: "A new generation of Kirati youth, both in Nepal and the diaspora, spearheaded cultural revival movements. They established digital archives, cultural schools, and advocacy groups to promote Kirati identity and seek political rights within Nepal’s federal system."
+  }
 ];
 
 export const upcomingEvents = [
@@ -259,13 +325,33 @@ export const culturalTabs = {
     }
   ],
   songs: [
+    // {
+    //   name: "Soi Dhole Soi",
+    //   type: "Sakela Song",
+    //   duration: "4:30",
+    //   content: "A lively Kirati folk song performed during Sakela festivals, featuring rhythmic beats for traditional dances. The repetitive 'Soi Dhole Soi' evokes calls to the drum, celebrating community and cultural heritage in Rai and Limbu traditions.",
+    //   link: "https://www.youtube.com/watch?v=jYlbD4gJjq4"
+    // },
     {
-      name: "Soi Dhole Soi",
-      type: "Sakela Song",
-      duration: "4:30",
-      content: "A lively Kirati folk song performed during Sakela festivals, featuring rhythmic beats for traditional dances. The repetitive 'Soi Dhole Soi' evokes calls to the drum, celebrating community and cultural heritage in Rai and Limbu traditions.",
-      link: "https://www.youtube.com/watch?v=jYlbD4gJjq4"
+      name: "Cham Songs",
+      type: "Ritualistic Song",
+      duration: "Varies",
+      content: "Ritualistic songs integral to Kirati Khambu Rai culture, linked to ancient oral traditions called Mundhum. Examples include Hiya Cham (wedding songs), Saima Cham (joyous duets often sung during Sakela festival), Bukundi Cham (forest calls). These songs serve ritual, social, and spiritual functions, including communication with ancestors and nature."
+    },
+    {
+      name: "Palam Samlo",
+      type: "Limbu Folk Song",
+      duration: "Varies",
+      content: "Ethnic Limbu folksongs such as Palam Samlo sung during chores, weddings, and especially Yalang (paddy dance), often after harvest. Palam involves circular dances stamping paddy grains accompanied by cooperative singing, reflecting Mundhum culture and traditions."
+    },
+    {
+      name: "Sakela Songs",
+      type: "Festival Song",
+      duration: "Varies",
+      content: "Popular among Rai Kirati, these songs accompany Sakela dance celebrations of agriculture, nature, and community unity. Famous new compositions like 'Kirati Keto' keep the tradition alive with modern renditions."
     }
+
+
 
 
     // { 
