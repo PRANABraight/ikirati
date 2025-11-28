@@ -126,7 +126,7 @@ export const timeline = [
 ];
 
 export const upcomingEvents = [
-  
+
   {
     date: "March 15",
     title: "Spring Equinox Ceremony",
@@ -159,61 +159,138 @@ export const upcomingEvents = [
 
 export const culturalTabs = {
   recipes: [
-    { 
-      name: "Grandmother's Corn Bread", 
-      difficulty: "Easy", 
+    {
+      name: "Kinema (Fermented Soybean Curry)",
+      difficulty: "Easy",
       time: "2 hours",
-      content: "Traditional corn bread recipe passed down through five generations. Made with sacred blue corn and mountain spring water, this bread was central to our harvest ceremonies."
+      content: "Kinema is a traditional fermented soybean product with a strong, pungent aroma and unique flavor. It is a staple protein source for Kirati people and used in curries, soups, and pickles.",
+      ingredients: ['300 grams fermented soybeans (kinema)',
+        '1 large onion',
+        '2 medium tomatoes',
+        '2 inches ginger',
+        '5 cloves garlic',
+        '5 fresh green chilies',
+        '30 ml mustard oil',
+        '1 tbsp chili powder',
+        '1/2 tsp turmeric powder',
+        'Salt to taste',
+        'Fresh coriander leaves for garnish'],
+
+      prep: ['Heat mustard oil in a pan. Add chopped onions and sauté until golden brown.',
+        'Add chopped green chilies and ginger-garlic paste; cook for a few minutes.',
+        'Stir in turmeric and chili powder.',
+
+        'Add chopped tomatoes and salt, cook until tomatoes soften.',
+
+        'Add kinema, mix well, and add water as needed to make a curry consistency.',
+
+        'Cover and simmer for 5-7 minutes.',
+        'Garnish with fresh coriander leaves before serving.']
     },
-    { 
-      name: "Festival Honey Cakes", 
-      difficulty: "Medium", 
-      time: "4 hours",
-      content: "Sweet cakes made with wild mountain honey, traditionally prepared for spring festivals. The recipe includes herbs that were believed to bring good fortune."
+    {
+      name: "Yangben-Faaksa (Pork Curry with Wild Lichen and Pig's Blood)",
+      difficulty: "Medium",
+      time: "2.5 hr",
+      content: "A festive delicacy featuring pork cooked with yangben (wild edible lichen) and pig’s blood, flavored with traditional spices.",
+      ingredients: ['Pork meat from local domestic pig',
+        'Wild lichen (yangben), cleaned and prepared',
+        "Pig's blood",
+        "Onion, ginger, garlic",
+        "Cumin seeds, coriander seeds",
+        "Salt and chili powder"],
+
+      prep: [
+        'Clean and prepare the wild lichen by boiling and washing thoroughly.',
+        'Cook pork pieces with onions, ginger, garlic, and spices.',
+        'Add the processed yangben and pig’s blood to the curry.',
+        'Simmer until pork is tender and flavors meld.',
+        '(Recipe details are traditionally passed down orally; preparation involves careful cleaning of wild lichen.)'
+      ]
     },
-    { 
-      name: "Sacred Ceremony Stew", 
-      difficulty: "Hard", 
-      time: "6 hours",
-      content: "A complex stew prepared for the most important ceremonies, containing seven sacred ingredients representing the elements of our spiritual world."
+    {
+      name: "Selroti (Traditional Rice Flour Ring Bread)",
+      difficulty: "Hard",
+      time: "3 hours",
+      content: "Selroti is a deep-fried, ring-shaped bread made from rice flour, commonly prepared during festivals.",
+      ingredients: ['Rice flour',
+
+        'Water',
+
+        'Ghee (clarified butter)',
+
+        'Sugar',
+
+        'Spices (optional: cardamom, clove)'],
+      prep: [
+        'Mix rice flour with water, sugar, and ghee to form a batter.',
+
+        'Add spices if desired.',
+
+        'Heat oil in a deep pan.',
+
+        'Pour batter in a circular motion to form ring shapes and deep fry until golden brown.',
+
+        'Serve with vegetable or meat curry, achar, or tea.',
+      ]
+    },
+    {
+      name: " Wachipa (Roasted Chicken with Rice and Burnt Feathers Powder)",
+      difficulty: "Hard",
+      time: "2 hours",
+      content: "Wachipa is a unique Kirati dish made by cooking rice with minced chicken meat and powder made from burnt downy chicken feathers, giving it a distinctive bitter aroma.",
+      ingredients: ['Minced local chicken meat',
+
+        'Rice',
+
+        'Powder of burnt downy feathers',
+
+        'Spices and herbs as per local tradition'],
+      prep: ['Roast chicken feathers until burnt and grind into a fine powder.',
+
+        'Cook minced chicken with spices.',
+
+        'Mix cooked chicken, rice, and feather powder together and cook until flavors blend.']
     }
   ],
   songs: [
-    { 
-      name: "Song of the Morning Hills", 
-      type: "Work Song", 
-      duration: "3:45",
-      content: "A traditional work song sung during the harvest season. The rhythm matches the movement of cutting grain, and the lyrics tell of gratitude to the earth."
-    },
-    { 
-      name: "Lullaby of the Valley", 
-      type: "Children's Song", 
-      duration: "2:30",
-      content: "A gentle lullaby that mothers have sung to their children for centuries. It tells of the protective spirits that watch over the valley at night."
-    },
-    { 
-      name: "Harvest Moon Dance", 
-      type: "Celebration", 
-      duration: "5:20",
-      content: "An energetic song for the harvest moon celebration, traditionally accompanied by drums and flutes. Dancers would move in circles representing the cycle of seasons."
+    {
+      name: "Soi Dhole Soi",
+      type: "Sakela Song",
+      duration: "4:30",
+      content: "A lively Kirati folk song performed during Sakela festivals, featuring rhythmic beats for traditional dances. The repetitive 'Soi Dhole Soi' evokes calls to the drum, celebrating community and cultural heritage in Rai and Limbu traditions.",
+      link: "https://www.youtube.com/watch?v=jYlbD4gJjq4"
     }
+
+
+    // { 
+    //   name: "Lullaby of the Valley", 
+    //   type: "Children's Song", 
+    //   duration: "2:30",
+    //   content: "A gentle lullaby that mothers have sung to their children for centuries. It tells of the protective spirits that watch over the valley at night."
+    // },
+    // { 
+    //   name: "Harvest Moon Dance", 
+    //   type: "Celebration", 
+    //   duration: "5:20",
+    //   content: "An energetic song for the harvest moon celebration, traditionally accompanied by drums and flutes. Dancers would move in circles representing the cycle of seasons."
+    // }
   ],
   stories: [
-    { 
-      name: "The Legend of Two Rivers", 
-      type: "Origin Story", 
+    {
+      name: "The Legend of Two Rivers",
+      type: "Origin Story",
       length: "15 min",
       content: "The foundational story of how our valley was formed when two great rivers met and decided to dance together for eternity, creating the fertile land we call home."
     },
-    { 
-      name: "The Wise Woman of the Woods", 
-      type: "Moral Tale", 
+    {
+      name: "The Wise Woman of the Woods",
+      type: "Moral Tale",
       length: "8 min",
       content: "A teaching story about a wise woman who lived in the deep forest and helped travelers find their way, both literally and spiritually."
     },
-    { 
-      name: "How Fire Came to the Valley", 
-      type: "Creation Myth", 
+    {
+      name: "How Fire Came to the Valley",
+      type: "Creation Myth",
       length: "12 min",
       content: "The ancient story of how fire was brought to our people by a brave young woman who climbed the highest peak to steal it from the sky spirits."
     }

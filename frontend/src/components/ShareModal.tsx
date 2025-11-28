@@ -6,9 +6,11 @@ interface ShareModalProps {
   onClose: () => void;
   title: string;
   content: string;
+  ingredients?: string[];
+  prep?: string[];
 }
 
-export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, title, content }) => {
+export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, title, content, ingredients, prep }) => {
   if (!isOpen) return null;
 
   const shareUrl = window.location.href;
@@ -67,8 +69,8 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, title, 
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full p-6">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+      <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl transform transition-all animate-scale-up">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-bold text-green-900">Share "{title}"</h3>
           <button
@@ -79,9 +81,29 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, title, 
           </button>
         </div>
 
-        <div className="mb-6">
-          <div className="bg-green-50 p-4 rounded-lg">
-            <p className="text-green-700 text-sm">{content.substring(0, 150)}...</p>
+        <div className="mb-6 max-h-[60vh] overflow-y-auto custom-scrollbar pr-2">
+          <div className="bg-green-50 p-4 rounded-lg border border-green-100">
+            <p className="text-green-700 text-sm italic">"{content.substring(0, 150)}..."</p>
+            {ingredients && ingredients.length > 0 && (
+              <div className="mt-3">
+                <span className="font-semibold text-green-800 text-xs uppercase tracking-wider">Ingredients</span>
+                <ul className="list-disc list-inside text-green-700 text-sm mt-1">
+                  {ingredients.map((ing, idx) => (
+                    <li key={idx}>{ing}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {prep && prep.length > 0 && (
+              <div className="mt-2">
+                <span className="font-semibold text-green-800 text-xs uppercase tracking-wider">Preparation</span>
+                <ol className="list-decimal list-inside text-green-700 text-sm mt-1">
+                  {prep.map((step, idx) => (
+                    <li key={idx}>{step}</li>
+                  ))}
+                </ol>
+              </div>
+            )}
           </div>
         </div>
 
@@ -90,7 +112,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, title, 
             <button
               key={index}
               onClick={option.action}
-              className={`flex items-center gap-3 p-3 rounded-lg transition-colors ${option.color}`}
+              className={`flex items-center gap-3 p-3 rounded-lg transition-all duration-300 transform hover:scale-105 ${option.color}`}
             >
               {option.icon}
               <span className="font-medium">{option.name}</span>
