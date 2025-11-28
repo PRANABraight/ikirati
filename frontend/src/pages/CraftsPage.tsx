@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import craftImage from '../assets/craft.jpg';
 import { Clock } from 'lucide-react';
 import { crafts } from '../data';
 import { ScrollRevealSection } from '../components/ScrollReveal';
@@ -19,7 +20,7 @@ export const CraftsPage: React.FC = () => {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100 ease-out"
           style={{
-            backgroundImage: "url('/src/assets/crafts.jpg')", // Assuming you might have a crafts image, or fallback to a generic one
+            backgroundImage: `url(${craftImage})`, // Assuming you might have a crafts image, or fallback to a generic one
             transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0005})`
           }}
         />

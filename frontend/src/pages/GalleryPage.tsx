@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import culturImage from '../assets/cultur.webp';
 import { X } from 'lucide-react';
 import { galleryImages } from '../data';
 import { ScrollRevealSection } from '../components/ScrollReveal';
@@ -29,7 +30,7 @@ export const GalleryPage: React.FC = () => {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100 ease-out"
           style={{
-            backgroundImage: "url('/src/assets/cultur.webp')", // Reusing cultural image or specific gallery hero
+            backgroundImage: `url(${culturImage})`, // Reusing cultural image or specific gallery hero
             transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0005})`
           }}
         />

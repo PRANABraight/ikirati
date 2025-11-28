@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import elderImage from '../assets/elder.jpg';
 import { MessageCircle } from 'lucide-react';
 import { AudioPlayer } from '../components/AudioPlayer';
 import { elders } from '../data';
@@ -20,7 +21,7 @@ export const EldersPage: React.FC = () => {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100 ease-out"
           style={{
-            backgroundImage: "url('/src/assets/elder.jpg')", // Assuming you have an elder image
+            backgroundImage: `url(${elderImage})`, // Assuming you have an elder image
             transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0005})`
           }}
         />

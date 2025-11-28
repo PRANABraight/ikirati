@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import culturImage from '../assets/cultur.webp';
+import elderImage from '../assets/elder.jpg';
 import { Link } from 'react-router-dom';
+// ... (rest of imports)
+
+// ... (inside component)
+
+
 import {
   Heart,
   Users,
@@ -158,7 +165,7 @@ export const HomePage: React.FC = () => {
         <div className="grid md:grid-cols-2">
           <div className="relative h-96 md:h-auto overflow-hidden group">
             <img
-              src="/src/assets/cultur.webp"
+              src={culturImage}
               alt="Cultural Archive"
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
@@ -210,7 +217,7 @@ export const HomePage: React.FC = () => {
           </div>
           <div className="relative h-96 md:h-auto overflow-hidden group order-1 md:order-2">
             <img
-              src='/src/assets/elder.jpg'
+              src={elderImage}
               alt="Timeline"
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />

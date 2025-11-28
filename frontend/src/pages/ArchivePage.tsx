@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import culturImage from '../assets/cultur.webp';
 import { Download, Share2, Music, Utensils, BookOpen, ArrowRight } from 'lucide-react';
 import { ShareModal } from '../components/ShareModal';
 import { culturalTabs } from '../data';
@@ -67,7 +68,7 @@ export const ArchivePage: React.FC = () => {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100 ease-out"
           style={{
-            backgroundImage: "url('/src/assets/cultur.webp')",
+            backgroundImage: `url(${culturImage})`,
             transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0005})`
           }}
         />

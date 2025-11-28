@@ -1,18 +1,24 @@
+import festival1 from '../assets/festival1.jpg';
+import mountain from '../assets/mountain.jpg';
+import craft from '../assets/craft.jpg';
+import story from '../assets/story.jpg';
+import weave from '../assets/weave.jpg';
+
 export const stories = [
   {
-    image: "/src/assets/festival1.jpg",
+    image: festival1,
     title: "The Ancient Festivals",
     text: "Every harvest season, our ancestors would gather on the hilltops to celebrate the bounty of the land. These traditions connected us to the earth and each other.",
     author: ""
   },
   {
-    image: "/src/assets/mountain.jpg",
+    image: mountain,
     title: "Songs of the Mountains",
     text: "The melodies passed down through generations tell stories of love, loss, and hope. They echo through our valleys like prayers to the wind.",
     author: ""
   },
   {
-    image: "/src/assets/craft.jpg",
+    image: craft,
     title: "Crafts of Our Grandmothers",
     text: "Each woven pattern, each carved symbol carries the wisdom of our people. These hands created beauty from the simplest materials.",
     author: ""
@@ -21,7 +27,7 @@ export const stories = [
 
 export const stories1 = [
   {
-    image: "/src/assets/story.jpg",
+    image: story,
     title: "Sumnima and Paruhang",
     text: `Long ago, before the mountains grew tall and the rivers carved their paths, there was only the vast sky and the fertile earth. The sky was ruled by Paruhang, the great sky god, powerful and wise, who watched over the heavens, the rain, and the spiritual realm. The earth was nurtured by Sumnima, the mother goddess, embodying fertility, prosperity, and the nurturing spirit of nature itself.
 
@@ -45,13 +51,13 @@ This is the story of Sumnima and Paruhang—the eternal mother and father of the
     author: ""
   },
   {
-    image: "/src/assets/mountain.jpg",
+    image: mountain,
     title: "Songs of the Mountains",
     text: "The melodies passed down through generations tell stories of love, loss, and hope. They echo through our valleys like prayers to the wind.",
     author: ""
   },
   {
-    image: "/src/assets/craft.jpg",
+    image: craft,
     title: "Crafts of Our Grandmothers",
     text: "Each woven pattern, each carved symbol carries the wisdom of our people. These hands created beauty from the simplest materials.",
     author: ""
@@ -60,7 +66,7 @@ This is the story of Sumnima and Paruhang—the eternal mother and father of the
 
 export const crafts = [
   {
-    image: "/src/assets/weave.jpg",
+    image: weave,
     title: "Traditional Weaving",
     description: "Ancient patterns tell stories of seasons, celebrations, and sacred symbols",
     difficulty: "Advanced",
