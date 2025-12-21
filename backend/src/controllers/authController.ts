@@ -31,9 +31,15 @@ export async function register(req: Request, res: Response) {
   try {
     const existing = await User.findByEmail(email);
     if (existing) return res.status(409).json({ error: 'User already exists' });
+
     const hash = await bcrypt.hash(password, 10);
-    const user = await User.create({ email, password: hash });
-    res.status(201).json({ id: user.id, email: user.email });
+    const user = await User.create({ email, password: hash, role: 'user' });
+
+    res.status(201).json({
+      id: user.id,
+      email: user.email,
+      role: user.role
+    });
   } catch (err) {
     console.error('Registration error:', err);
     res.status(500).json({ error: 'Registration failed' });
@@ -50,10 +56,25 @@ export async function login(req: Request, res: Response) {
   try {
     const user = await User.findByEmail(email);
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(401).json({ error: 'Invalid credentials' });
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '1d' });
-    res.json({ token });
+
+    // Include role in JWT token
+    const token = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role
+      }
+    });
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ error: 'Login failed' });

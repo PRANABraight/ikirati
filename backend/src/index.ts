@@ -5,6 +5,8 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import path from 'path';
 import authRoutes from './routes/auth';
+import storiesRoutes from './routes/stories';
+import { testConnection, initDatabase } from './db';
 
 dotenv.config();
 
@@ -58,8 +60,9 @@ app.use(generalLimiter);
 // Health check endpoint
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
-// Auth routes with stricter rate limiting
+// API Routes
 app.use('/api/auth', authLimiter, authRoutes);
+app.use('/api/stories', storiesRoutes);
 
 // Serve static frontend files in production
 const frontendDistPath = path.join(__dirname, '../../frontend/dist');
@@ -79,10 +82,31 @@ if (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'secret') {
 }
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-    console.log(`✅ Server running on port ${PORT}`);
-    console.log(`🔒 CORS enabled for: ${corsOptions.origin}`);
-    console.log(`🛡️  Security headers enabled`);
-    console.log(`⏱️  Rate limiting active`);
-    console.log(`📁 Serving frontend from: ${frontendDistPath}`);
-});
+
+// Start server with database initialization
+async function startServer() {
+    try {
+        // Test database connection
+        const connected = await testConnection();
+        if (connected) {
+            // Initialize database tables
+            await initDatabase();
+        } else {
+            console.warn('⚠️  Running without database connection. Some features may not work.');
+        }
+
+        app.listen(PORT, () => {
+            console.log(`✅ Server running on port ${PORT}`);
+            console.log(`🔒 CORS enabled for: ${corsOptions.origin}`);
+            console.log(`🛡️  Security headers enabled`);
+            console.log(`⏱️  Rate limiting active`);
+            console.log(`📁 Serving frontend from: ${frontendDistPath}`);
+            console.log(`📚 Stories API: /api/stories`);
+        });
+    } catch (error) {
+        console.error('Failed to start server:', error);
+        process.exit(1);
+    }
+}
+
+startServer();
