@@ -3,6 +3,7 @@ import craftImage from '../assets/craft.webp';
 import { Clock } from 'lucide-react';
 import { crafts } from '../data';
 import { ScrollRevealSection } from '../components/ScrollReveal';
+import { HeroOverlay } from '../components/HeroOverlay';
 
 export const CraftsPage: React.FC = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -25,7 +26,7 @@ export const CraftsPage: React.FC = () => {
           }}
         />
         {/* Fallback background if image is missing or just overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-green-900/80 via-green-800/60 to-amber-50" />
+        <HeroOverlay />
 
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
 

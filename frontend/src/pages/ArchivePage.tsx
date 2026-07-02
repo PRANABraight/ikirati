@@ -4,6 +4,7 @@ import { Download, Share2, Music, Utensils, BookOpen, ArrowRight } from 'lucide-
 import { ShareModal } from '../components/ShareModal';
 import { sanityClient, urlFor } from '../lib/sanity';
 import { ScrollRevealSection } from '../components/ScrollReveal';
+import { HeroOverlay } from '../components/HeroOverlay';
 
 type CulturalTabKey = 'recipes' | 'songs' | 'stories';
 
@@ -89,14 +90,10 @@ export const ArchivePage: React.FC = () => {
             transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0005})`
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-green-950/90 via-green-900/70 to-amber-50" />
+        <HeroOverlay variant="deep" />
 
         <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
-          <div className="mb-6 animate-float-slow">
-            <span className="inline-block py-1 px-3 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 backdrop-blur-sm text-sm font-bold tracking-widest uppercase mb-4">
-              Preserving Our Legacy
-            </span>
-          </div>
+          <div className="mb-6 animate-float-slow"></div>
           <h1 className="text-6xl md:text-8xl font-bold text-white mb-8 drop-shadow-2xl font-serif tracking-tight">
             Cultural <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-500">Archive</span>
           </h1>

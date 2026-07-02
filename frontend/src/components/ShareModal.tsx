@@ -46,25 +46,25 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, title, 
       name: 'Copy Link',
       icon: <Link className="w-5 h-5" />,
       action: () => copyToClipboard(shareUrl),
-      color: 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+      color: 'bg-green-50 hover:bg-green-100 text-green-700 border border-green-200'
     },
     {
       name: 'Copy Content',
       icon: <Copy className="w-5 h-5" />,
       action: () => copyToClipboard(content),
-      color: 'bg-green-100 hover:bg-green-200 text-green-700'
+      color: 'bg-green-100 hover:bg-green-200 text-green-800 border border-green-300'
     },
     {
       name: 'Email',
       icon: <Mail className="w-5 h-5" />,
       action: () => window.open(`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`${shareText}\n\n${content}\n\n${shareUrl}`)}`),
-      color: 'bg-blue-100 hover:bg-blue-200 text-blue-700'
+      color: 'bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200'
     },
     {
       name: 'Share',
       icon: <Facebook className="w-5 h-5" />,
       action: shareViaWebAPI,
-      color: 'bg-amber-100 hover:bg-amber-200 text-amber-700'
+      color: 'bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300'
     }
   ];
 
@@ -75,9 +75,9 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, title, 
           <h3 className="text-xl font-bold text-green-900">Share "{title}"</h3>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2 hover:bg-green-50 rounded-full transition-colors"
           >
-            <X className="w-5 h-5 text-gray-600" />
+            <X className="w-5 h-5 text-green-700" />
           </button>
         </div>
 

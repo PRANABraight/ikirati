@@ -18,6 +18,7 @@ import {
 import { stories } from '../data';
 
 import { ScrollRevealSection } from '../components/ScrollReveal';
+import { HeroOverlay } from '../components/HeroOverlay';
 
 export const HomePage: React.FC = () => {
   const [currentStory, setCurrentStory] = useState(0);
@@ -50,15 +51,11 @@ export const HomePage: React.FC = () => {
             transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0005})`
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-green-900/80 via-green-800/50 to-amber-900/80" />
+        <HeroOverlay />
 
         <div className={`relative z-10 text-center px-6 max-w-5xl mx-auto transition-all duration-1000 pt-20 md:pt-0 ${heroVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}>
-          <div className="mb-8 animate-float-slow">
-            <span className="inline-block py-1 px-4 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 backdrop-blur-sm text-sm font-bold tracking-widest uppercase">
-              Welcome to Kirati Heart
-            </span>
-          </div>
+          <div className="mb-8 animate-float-slow"></div>
           <h1 className="text-5xl md:text-8xl font-bold text-white mb-8 leading-tight tracking-tight drop-shadow-xl font-serif">
             Remember Our
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-500">

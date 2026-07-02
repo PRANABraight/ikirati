@@ -5,7 +5,7 @@ interface Story {
     image: string;
     title: string;
     text: string;
-    author: string;
+    author?: string;
     link?: string;
 }
 

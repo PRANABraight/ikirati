@@ -43,9 +43,9 @@ export const TimelinePage: React.FC = () => {
   return (
     <div className="overflow-x-hidden">
       {/* Scroll Progress Bar */}
-      <div className="fixed top-0 left-0 w-full h-1.5 z-50 bg-gray-200/20 backdrop-blur-sm">
+      <div className="fixed top-0 left-0 w-full h-1.5 z-50 bg-primary-darker/20 backdrop-blur-sm">
         <div
-          className="h-full bg-gradient-to-r from-amber-400 to-green-600 transition-all duration-100 ease-out"
+          className="h-full bg-accent transition-all duration-100 ease-out"
           style={{ width: `${scrollProgress}%` }}
         />
       </div>
@@ -62,11 +62,7 @@ export const TimelinePage: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-green-950/90 via-green-900/70 to-amber-50" />
 
         <div className="relative z-10 text-center px-6 max-w-5xl mx-auto">
-          <div className="mb-6 animate-float-slow">
-            <span className="inline-block py-1 px-3 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 backdrop-blur-sm text-sm font-bold tracking-widest uppercase mb-4">
-              Est. Ancient Times
-            </span>
-          </div>
+          <div className="mb-6 animate-float-slow"></div>
           <h1 className="text-6xl md:text-8xl font-bold text-white mb-8 drop-shadow-2xl font-serif tracking-tight leading-tight">
             Our Journey <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-500">Through Time</span>

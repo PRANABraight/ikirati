@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { BookOpen, User, Clock, ArrowRight, Quote, Share2 } from 'lucide-react';
+import { BookOpen, User, Clock, ArrowRight, Quote} from 'lucide-react';
 import { ScrollRevealSection } from '../components/ScrollReveal';
+import { HeroOverlay } from '../components/HeroOverlay';
 import { StoryModal } from '../components/StoryModal';
 import danceImage from '../assets/dance.webp';
 import { sanityClient, urlFor } from '../lib/sanity';
@@ -38,14 +39,10 @@ export const StoriesPage: React.FC = () => {
             backgroundImage: `url(${danceImage})`,
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-green-950/90 via-green-900/70 to-amber-50" />
+        <HeroOverlay variant="deep" />
 
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-          <div className="mb-6 animate-float-slow">
-            <span className="inline-block py-1 px-3 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 backdrop-blur-sm text-sm font-bold tracking-widest uppercase mb-4">
-              Echoes of the Past
-            </span>
-          </div>
+          <div className="mb-6 animate-float-slow"></div>
           <h1 className="text-6xl md:text-8xl font-bold text-white mb-8 drop-shadow-2xl font-serif tracking-tight">
             Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-500">Stories</span>
           </h1>
@@ -172,10 +169,10 @@ export const StoriesPage: React.FC = () => {
             <p className="text-xl md:text-2xl text-green-100 mb-12 max-w-2xl mx-auto font-light leading-relaxed">
               Do you have a family legend or a personal memory to share? Help us expand our collection.
             </p>
-            <button className="bg-amber-500 hover:bg-amber-400 text-white px-12 py-5 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center gap-3 mx-auto">
+            {/* <button className="bg-amber-500 hover:bg-amber-400 text-white px-12 py-5 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center gap-3 mx-auto">
               <Share2 className="w-5 h-5" />
               Submit a Story
-            </button>
+            </button> */}
           </ScrollRevealSection>
         </div>
       </section>

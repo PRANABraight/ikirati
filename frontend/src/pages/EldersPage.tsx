@@ -4,6 +4,7 @@ import { MessageCircle } from 'lucide-react';
 import { AudioPlayer } from '../components/AudioPlayer';
 import { elders } from '../data';
 import { ScrollRevealSection } from '../components/ScrollReveal';
+import { HeroOverlay } from '../components/HeroOverlay';
 
 export const EldersPage: React.FC = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -25,7 +26,7 @@ export const EldersPage: React.FC = () => {
             transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0005})`
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-green-900/80 via-green-800/60 to-amber-50" />
+        <HeroOverlay />
 
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
 
