@@ -250,7 +250,7 @@ export const ArchivePage: React.FC = () => {
                             </div>
                           )}
 
-                          {activeTab === 'songs' && 'link' in item && (
+                          {activeTab === 'songs' && (item as any).link && (
                             <div className="relative z-10 mt-6">
                               <div className="rounded-2xl overflow-hidden shadow-lg border-4 border-white">
                                 <iframe
