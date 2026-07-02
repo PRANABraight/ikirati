@@ -140,131 +140,135 @@ export const ArchivePage: React.FC = () => {
                 <div className="grid gap-8">
                   {culturalTabs[activeTab].map((item, index) => (
                     <ScrollRevealSection key={index}>
-                      <div className="bg-white rounded-2xl p-8 md:p-10 hover:shadow-xl transition-all duration-300 border border-green-50 group hover:-translate-y-1 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-full -mr-16 -mt-16 opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
+                      <div className="bg-white rounded-2xl hover:shadow-xl transition-all duration-300 border border-green-50 group hover:-translate-y-1 relative overflow-hidden">
+                        <div className="p-8 md:p-10 relative">
+                          <div className="absolute top-0 right-0 w-32 h-32 bg-amber-50 rounded-full -mr-16 -mt-16 opacity-50 group-hover:scale-150 transition-transform duration-700 -z-0"></div>
 
-                        <div className="flex flex-col md:flex-row items-start justify-between gap-6 relative z-10">
-                          <div className="flex-1 w-full">
-                            <div className="flex items-center gap-3 mb-3">
-                              <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-bold uppercase tracking-wider">
-                                {activeTab === 'recipes' ? 'Culinary' : 'Melody'}
-                              </span>
-                              <p className="text-green-400 text-sm font-semibold uppercase tracking-wider flex items-center gap-1">
-                                {activeTab === 'recipes' && 'difficulty' in item && 'time' in item && (
-                                  <>
-                                    <span>•</span> {item.difficulty} <span>•</span> {item.time}
-                                  </>
-                                )}
-                                {activeTab === 'songs' && 'type' in item && 'duration' in item && (
-                                  <>
-                                    <span>•</span> {item.type} <span>•</span> {item.duration}
-                                  </>
-                                )}
-                              </p>
-                            </div>
-
-                            <h4 className="font-bold text-green-900 text-3xl mb-4 group-hover:text-amber-600 transition-colors font-serif">{item.name}</h4>
-
+                          <div className="relative z-10 flex flex-col sm:flex-row gap-6 mb-6">
                             {activeTab === 'recipes' && 'image' in item && item.image && (
-                              <div className="mb-6 rounded-2xl overflow-hidden shadow-lg border-4 border-white">
+                              <div className="w-full sm:w-40 h-40 flex-shrink-0 rounded-xl overflow-hidden shadow-md">
                                 <img
                                   src={item.image}
                                   alt={item.name}
-                                  className="w-full h-64 object-cover"
+                                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                 />
                               </div>
                             )}
 
-                            <div className="text-green-700 leading-relaxed text-lg mb-6">
-                              {activeTab === 'recipes' && !expandedIndexes.includes(index)
-                                ? `${item.content.substring(0, 150)}...`
-                                : item.content}
-                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between gap-4 mb-3">
+                                <div className="flex items-center gap-3 flex-wrap">
+                                  <span className="px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-bold uppercase tracking-wider">
+                                    {activeTab === 'recipes' ? 'Culinary' : 'Melody'}
+                                  </span>
+                                  <p className="text-green-400 text-sm font-semibold uppercase tracking-wider flex items-center gap-1">
+                                    {activeTab === 'recipes' && 'difficulty' in item && 'time' in item && (
+                                      <>
+                                        <span>•</span> {item.difficulty} <span>•</span> {item.time}
+                                      </>
+                                    )}
+                                    {activeTab === 'songs' && 'type' in item && 'duration' in item && (
+                                      <>
+                                        <span>•</span> {item.type} <span>•</span> {item.duration}
+                                      </>
+                                    )}
+                                  </p>
+                                </div>
 
-                            {activeTab === 'recipes' && (
-                              <div className="mt-4">
-                                {!expandedIndexes.includes(index) ? (
+                                <div className="flex items-center gap-2 flex-shrink-0">
                                   <button
-                                    className="text-amber-600 font-bold hover:text-amber-700 transition-colors text-sm flex items-center gap-2 group/btn"
-                                    onClick={() => toggleExpand(index)}
+                                    onClick={() => handleDownload(item, activeTab)}
+                                    className="p-2.5 bg-green-50 hover:bg-green-100 rounded-lg transition-colors group/btn border border-green-100"
+                                    title="Download"
                                   >
-                                    Read Full Recipe
-                                    <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                                    <Download className="w-4 h-4 text-green-700 group-hover/btn:scale-110 transition-transform" />
                                   </button>
-                                ) : (
-                                  <div className="mt-8 space-y-8 bg-green-50/50 p-8 rounded-2xl border border-green-100">
-                                    {Array.isArray((item as any).ingredients) && (item as any).ingredients.length > 0 && (
-                                      <div>
-                                        <span className="font-bold text-green-900 block mb-4 text-lg font-serif border-b border-green-200 pb-2">Ingredients</span>
-                                        <ul className="grid md:grid-cols-2 gap-3 text-green-800">
-                                          {(item as any).ingredients.map((ing: string, idx: number) => (
-                                            <li key={idx} className="flex items-center gap-3">
-                                              <span className="w-2 h-2 bg-amber-500 rounded-full flex-shrink-0" />
-                                              {ing}
-                                            </li>
-                                          ))}
-                                        </ul>
-                                      </div>
-                                    )}
-
-                                    {Array.isArray((item as any).prep) && (item as any).prep.length > 0 && (
-                                      <div>
-                                        <span className="font-bold text-green-900 block mb-4 text-lg font-serif border-b border-green-200 pb-2">Preparation</span>
-                                        <ol className="space-y-4 text-green-800">
-                                          {(item as any).prep.map((step: string, idx: number) => (
-                                            <li key={idx} className="flex gap-4">
-                                              <span className="font-bold text-amber-600 bg-amber-100 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">{idx + 1}</span>
-                                              <span className="pt-1">{step}</span>
-                                            </li>
-                                          ))}
-                                        </ol>
-                                      </div>
-                                    )}
-                                    <button
-                                      className="text-amber-600 font-bold hover:text-amber-700 transition-colors text-sm mt-4 flex items-center gap-2"
-                                      onClick={() => toggleExpand(index)}
-                                    >
-                                      Show Less
-                                    </button>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-
-                            {activeTab === 'songs' && 'link' in item && (
-                              <div className="mt-6">
-                                <div className="rounded-2xl overflow-hidden shadow-lg border-4 border-white">
-                                  <iframe
-                                    width="100%"
-                                    height="315"
-                                    src={`https://www.youtube.com/embed/${(item as any).link.split('v=')[1]}`}
-                                    title={item.name}
-                                    frameBorder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                    className="w-full aspect-video"
-                                  ></iframe>
+                                  <button
+                                    onClick={() => handleShare(item)}
+                                    className="p-2.5 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors group/btn border border-amber-100"
+                                    title="Share"
+                                  >
+                                    <Share2 className="w-4 h-4 text-amber-700 group-hover/btn:scale-110 transition-transform" />
+                                  </button>
                                 </div>
                               </div>
-                            )}
+
+                              <h4 className="font-bold text-green-900 text-3xl group-hover:text-amber-600 transition-colors font-serif">{item.name}</h4>
+                            </div>
                           </div>
 
-                          <div className="flex flex-row md:flex-col gap-3 md:ml-6 mt-4 md:mt-0">
-                            <button
-                              onClick={() => handleDownload(item, activeTab)}
-                              className="p-4 bg-green-50 hover:bg-green-100 rounded-xl transition-colors group/btn border border-green-100"
-                              title="Download"
-                            >
-                              <Download className="w-5 h-5 text-green-700 group-hover/btn:scale-110 transition-transform" />
-                            </button>
-                            <button
-                              onClick={() => handleShare(item)}
-                              className="p-4 bg-amber-50 hover:bg-amber-100 rounded-xl transition-colors group/btn border border-amber-100"
-                              title="Share"
-                            >
-                              <Share2 className="w-5 h-5 text-amber-700 group-hover/btn:scale-110 transition-transform" />
-                            </button>
+                          <div className="relative z-10 text-green-700 leading-relaxed text-lg mb-6">
+                            {activeTab === 'recipes' && !expandedIndexes.includes(index)
+                              ? `${item.content.substring(0, 150)}...`
+                              : item.content}
                           </div>
+
+                          {activeTab === 'recipes' && (
+                            <div className="relative z-10 mt-4">
+                              {!expandedIndexes.includes(index) ? (
+                                <button
+                                  className="text-amber-600 font-bold hover:text-amber-700 transition-colors text-sm flex items-center gap-2 group/btn"
+                                  onClick={() => toggleExpand(index)}
+                                >
+                                  Read Full Recipe
+                                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                                </button>
+                              ) : (
+                                <div className="mt-8 space-y-8 bg-green-50/50 p-8 rounded-2xl border border-green-100">
+                                  {Array.isArray((item as any).ingredients) && (item as any).ingredients.length > 0 && (
+                                    <div>
+                                      <span className="font-bold text-green-900 block mb-4 text-lg font-serif border-b border-green-200 pb-2">Ingredients</span>
+                                      <ul className="grid md:grid-cols-2 gap-3 text-green-800">
+                                        {(item as any).ingredients.map((ing: string, idx: number) => (
+                                          <li key={idx} className="flex items-center gap-3">
+                                            <span className="w-2 h-2 bg-amber-500 rounded-full flex-shrink-0" />
+                                            {ing}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  )}
+
+                                  {Array.isArray((item as any).prep) && (item as any).prep.length > 0 && (
+                                    <div>
+                                      <span className="font-bold text-green-900 block mb-4 text-lg font-serif border-b border-green-200 pb-2">Preparation</span>
+                                      <ol className="space-y-4 text-green-800">
+                                        {(item as any).prep.map((step: string, idx: number) => (
+                                          <li key={idx} className="flex gap-4">
+                                            <span className="font-bold text-amber-600 bg-amber-100 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">{idx + 1}</span>
+                                            <span className="pt-1">{step}</span>
+                                          </li>
+                                        ))}
+                                      </ol>
+                                    </div>
+                                  )}
+                                  <button
+                                    className="text-amber-600 font-bold hover:text-amber-700 transition-colors text-sm mt-4 flex items-center gap-2"
+                                    onClick={() => toggleExpand(index)}
+                                  >
+                                    Show Less
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {activeTab === 'songs' && 'link' in item && (
+                            <div className="relative z-10 mt-6">
+                              <div className="rounded-2xl overflow-hidden shadow-lg border-4 border-white">
+                                <iframe
+                                  width="100%"
+                                  height="315"
+                                  src={`https://www.youtube.com/embed/${(item as any).link.split('v=')[1]}`}
+                                  title={item.name}
+                                  frameBorder="0"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                  className="w-full aspect-video"
+                                ></iframe>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </ScrollRevealSection>
