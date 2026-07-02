@@ -2,13 +2,30 @@ import React, { useState, useEffect } from 'react';
 import culturImage from '../assets/cultur.webp';
 import { Download, Share2, Music, Utensils, BookOpen, ArrowRight } from 'lucide-react';
 import { ShareModal } from '../components/ShareModal';
-import { culturalTabs } from '../data';
+import { sanityClient, urlFor } from '../lib/sanity';
 import { ScrollRevealSection } from '../components/ScrollReveal';
 
-type CulturalTabKey = keyof typeof culturalTabs;
+type CulturalTabKey = 'recipes' | 'songs' | 'stories';
+
+type CulturalTabs = Record<CulturalTabKey, any[]>;
 
 export const ArchivePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<CulturalTabKey>('recipes');
+  const [culturalTabs, setCulturalTabs] = useState<CulturalTabs>({ recipes: [], songs: [], stories: [] });
+
+  useEffect(() => {
+    Promise.all([
+      sanityClient.fetch(`*[_type == "recipe"]{name, difficulty, time, content, ingredients, prep, image}`),
+      sanityClient.fetch(`*[_type == "song"]{name, type, duration, content, link}`),
+      sanityClient.fetch(`*[_type == "story" && source == "cultural-story"]{"name": title, "content": text}`),
+    ]).then(([recipes, songs, stories]) => {
+      setCulturalTabs({
+        recipes: recipes.map((r: any) => ({ ...r, image: r.image ? urlFor(r.image).url() : null })),
+        songs,
+        stories,
+      });
+    });
+  }, []);
   const [shareModal, setShareModal] = useState<{
     isOpen: boolean;
     title: string;
@@ -147,6 +164,16 @@ export const ArchivePage: React.FC = () => {
                             </div>
 
                             <h4 className="font-bold text-green-900 text-3xl mb-4 group-hover:text-amber-600 transition-colors font-serif">{item.name}</h4>
+
+                            {activeTab === 'recipes' && 'image' in item && item.image && (
+                              <div className="mb-6 rounded-2xl overflow-hidden shadow-lg border-4 border-white">
+                                <img
+                                  src={item.image}
+                                  alt={item.name}
+                                  className="w-full h-64 object-cover"
+                                />
+                              </div>
+                            )}
 
                             <div className="text-green-700 leading-relaxed text-lg mb-6">
                               {activeTab === 'recipes' && !expandedIndexes.includes(index)

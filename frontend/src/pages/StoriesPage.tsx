@@ -1,20 +1,32 @@
-import React, { useState } from 'react';
-import { stories, stories1 } from '../data';
+import React, { useEffect, useState } from 'react';
 import { BookOpen, User, Clock, ArrowRight, Quote, Share2 } from 'lucide-react';
 import { ScrollRevealSection } from '../components/ScrollReveal';
 import { StoryModal } from '../components/StoryModal';
 import danceImage from '../assets/dance.webp';
+import { sanityClient, urlFor } from '../lib/sanity';
+
+type Legend = {
+  title: string;
+  text: string;
+  author?: string;
+  image: string;
+};
 
 export const StoriesPage: React.FC = () => {
-  const [selectedStory, setSelectedStory] = useState<typeof stories[0] | null>(null);
+  const [selectedStory, setSelectedStory] = useState<Legend | null>(null);
+  const [allStories, setAllStories] = useState<Legend[]>([]);
 
-  // Combine stories and remove duplicates based on title
-  const allStories = [...stories, ...stories1]
-    .filter((story, index, self) =>
-      index === self.findIndex((t) => (
-        t.title === story.title
-      ))
-    );
+  useEffect(() => {
+    sanityClient
+      .fetch<{ title: string; text: string; author?: string; image: any }[]>(
+        `*[_type == "story" && source == "legend"]{title, text, author, image}`
+      )
+      .then((docs) =>
+        setAllStories(docs.map((doc) => ({ ...doc, image: urlFor(doc.image).url() })))
+      );
+  }, []);
+
+  if (allStories.length === 0) return null;
 
   return (
     <div className="overflow-x-hidden">
