@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import culturImage from '../assets/cultur.webp';
 import { Download, Share2, Music, Utensils, BookOpen, ArrowRight } from 'lucide-react';
 import { ShareModal } from '../components/ShareModal';
-import { sanityClient, urlFor } from '../lib/sanity';
+import { sanityClient, urlFor, urlForFile } from '../lib/sanity';
 import { ScrollRevealSection } from '../components/ScrollReveal';
 import { HeroOverlay } from '../components/HeroOverlay';
+import { AudioPlayer } from '../components/AudioPlayer';
 
 type CulturalTabKey = 'recipes' | 'songs' | 'stories';
 
@@ -17,7 +18,7 @@ export const ArchivePage: React.FC = () => {
   useEffect(() => {
     Promise.all([
       sanityClient.fetch(`*[_type == "recipe"]{name, difficulty, time, content, ingredients, prep, image}`),
-      sanityClient.fetch(`*[_type == "song"]{name, type, duration, content, link}`),
+      sanityClient.fetch(`*[_type == "song"]{name, audio, type, duration, content, link}`),
       sanityClient.fetch(`*[_type == "story" && source == "cultural-story"]{"name": title, "content": text}`),
     ]).then(([recipes, songs, stories]) => {
       setCulturalTabs({
@@ -164,7 +165,7 @@ export const ArchivePage: React.FC = () => {
                                         <span>•</span> {item.difficulty} <span>•</span> {item.time}
                                       </>
                                     )}
-                                    {activeTab === 'songs' && 'type' in item && 'duration' in item && (
+                                    {activeTab === 'songs' && 'type' in item && 'audio' in item && 'duration' in item && (
                                       <>
                                         <span>•</span> {item.type} <span>•</span> {item.duration}
                                       </>
@@ -247,6 +248,12 @@ export const ArchivePage: React.FC = () => {
                                   </button>
                                 </div>
                               )}
+                            </div>
+                          )}
+
+                          {activeTab === 'songs' && (item as any).audio && (
+                            <div className="relative z-10 mt-6">
+                              <AudioPlayer src={urlForFile((item as any).audio)} title={item.name} />
                             </div>
                           )}
 

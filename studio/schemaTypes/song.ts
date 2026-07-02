@@ -17,6 +17,14 @@ export default defineType({
       type: 'string',
     }),
     defineField({
+      name: 'audio',
+      title: 'Audio',
+      type: 'file',
+      options: {
+        accept: 'audio/*',
+      },
+    }),
+    defineField({
       name: 'duration',
       title: 'Duration',
       type: 'string',
