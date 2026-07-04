@@ -27,19 +27,19 @@ export const Footer: React.FC = () => {
             <ul className="space-y-4 text-green-200">
               <li><Link to="/stories" className="hover:text-white transition-colors">Stories</Link></li>
               <li><Link to="/timeline" className="hover:text-white transition-colors">Timeline</Link></li>
-              <li><Link to="/gallery" className="hover:text-white transition-colors">Gallery</Link></li>
-              <li><Link to="/crafts" className="hover:text-white transition-colors">Crafts</Link></li>
+              {/* <li><Link to="/gallery" className="hover:text-white transition-colors">Gallery</Link></li> */}
+              {/* <li><Link to="/crafts" className="hover:text-white transition-colors">Crafts</Link></li> */}
             </ul>
           </div>
 
-          <div>
-            <h4 className="font-bold text-lg mb-6 text-amber-400">Community</h4>
-            <ul className="space-y-4 text-green-200">
-              <li><Link to="/events" className="hover:text-white transition-colors">Events</Link></li>
-              <li><Link to="/elders" className="hover:text-white transition-colors">Elders</Link></li>
-              <li><Link to="/language" className="hover:text-white transition-colors">Language</Link></li>
-            </ul>
-          </div>
+          {/* <div> */}
+            {/* <h4 className="font-bold text-lg mb-6 text-amber-400">Community</h4>
+            <ul className="space-y-4 text-green-200"> */}
+              {/* <li><Link to="/events" className="hover:text-white transition-colors">Events</Link></li> */}
+              {/* <li><Link to="/elders" className="hover:text-white transition-colors">Elders</Link></li> */}
+              {/* <li><Link to="/language" className="hover:text-white transition-colors">Language</Link></li> */}
+            {/* </ul>
+          </div> */}
 
           <div>
             <h4 className="font-bold text-lg mb-6 text-amber-400">Resources</h4>
