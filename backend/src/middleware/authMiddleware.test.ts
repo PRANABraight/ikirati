@@ -10,7 +10,11 @@ function mockRes() {
 }
 
 describe('authenticateJWT', () => {
-  const secret = process.env.JWT_SECRET || 'secret';
+  const secret = 'test-secret';
+
+  beforeAll(() => {
+    process.env.JWT_SECRET = secret;
+  });
 
   it('rejects requests with no authorization header', () => {
     const req = { headers: {} } as Request;

@@ -1,33 +1,58 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import culturImage from '../assets/cultur.webp';
 import { Download, Share2, Music, Utensils, BookOpen, ArrowRight } from 'lucide-react';
 import { ShareModal } from '../components/ShareModal';
-import { sanityClient, urlFor, urlForFile } from '../lib/sanity';
+import { urlFor, urlForFile } from '../lib/sanity';
+import { getYouTubeId } from '../lib/youtube';
+import { useSanityQuery } from '../hooks/useSanityQuery';
+import { useScrollY } from '../hooks/useScrollY';
+import { LoadingSection, ErrorSection, EmptySection } from '../components/DataState';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { ScrollRevealSection } from '../components/ScrollReveal';
 import { HeroOverlay } from '../components/HeroOverlay';
 import { AudioPlayer } from '../components/AudioPlayer';
 
 type CulturalTabKey = 'recipes' | 'songs' | 'stories';
 
-type CulturalTabs = Record<CulturalTabKey, any[]>;
+type ArchiveItem = {
+  name: string;
+  content: string;
+  difficulty?: string;
+  time?: string;
+  ingredients?: string[];
+  prep?: string[];
+  image?: string | null;
+  audio?: unknown;
+  type?: string;
+  duration?: string;
+  link?: string;
+};
+
+type RecipeDoc = Omit<ArchiveItem, 'image'> & { image?: unknown };
+
+type CulturalTabs = Record<CulturalTabKey, ArchiveItem[]>;
+
+type ArchiveData = Omit<CulturalTabs, 'recipes'> & { recipes: RecipeDoc[] };
+
+const ARCHIVE_QUERY = `{
+  "recipes": *[_type == "recipe"]{name, difficulty, time, content, ingredients, prep, image},
+  "songs": *[_type == "song"]{name, audio, type, duration, content, link},
+  "stories": *[_type == "story" && source == "cultural-story"]{"name": title, "content": text}
+}`;
 
 export const ArchivePage: React.FC = () => {
+  usePageMeta('Cultural Archive', 'A living library of Kirati recipes, songs, and stories passed down through generations.');
   const [activeTab, setActiveTab] = useState<CulturalTabKey>('recipes');
-  const [culturalTabs, setCulturalTabs] = useState<CulturalTabs>({ recipes: [], songs: [], stories: [] });
+  const { data, loading, error, retry } = useSanityQuery<ArchiveData>(ARCHIVE_QUERY);
 
-  useEffect(() => {
-    Promise.all([
-      sanityClient.fetch(`*[_type == "recipe"]{name, difficulty, time, content, ingredients, prep, image}`),
-      sanityClient.fetch(`*[_type == "song"]{name, audio, type, duration, content, link}`),
-      sanityClient.fetch(`*[_type == "story" && source == "cultural-story"]{"name": title, "content": text}`),
-    ]).then(([recipes, songs, stories]) => {
-      setCulturalTabs({
-        recipes: recipes.map((r: any) => ({ ...r, image: r.image ? urlFor(r.image).url() : null })),
-        songs,
-        stories,
-      });
-    });
-  }, []);
+  const culturalTabs: CulturalTabs = {
+    recipes: (data?.recipes ?? []).map((r) => ({
+      ...r,
+      image: r.image ? urlFor(r.image as Parameters<typeof urlFor>[0]).width(400).auto('format').url() : null,
+    })),
+    songs: data?.songs ?? [],
+    stories: data?.stories ?? [],
+  };
   const [shareModal, setShareModal] = useState<{
     isOpen: boolean;
     title: string;
@@ -43,15 +68,9 @@ export const ArchivePage: React.FC = () => {
   });
   // Add expanded state for each recipe card
   const [expandedIndexes, setExpandedIndexes] = useState<number[]>([]);
-  const [scrollY, setScrollY] = useState(0);
+  const scrollY = useScrollY();
 
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const handleDownload = (item: any, type: string) => {
+  const handleDownload = (item: ArchiveItem, type: string) => {
     const content = `${item.name} \n\nType: ${type} \n\nContent: ${item.content} `;
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -64,7 +83,7 @@ export const ArchivePage: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
-  const handleShare = (item: any) => {
+  const handleShare = (item: ArchiveItem) => {
     setShareModal({
       isOpen: true,
       title: item.name,
@@ -135,6 +154,11 @@ export const ArchivePage: React.FC = () => {
               </div>
 
               <div className="p-8 md:p-16 bg-gradient-to-br from-white to-amber-50/30 min-h-[600px]">
+                {loading && <LoadingSection label="Loading archive" />}
+                {!loading && error && <ErrorSection onRetry={retry} />}
+                {!loading && !error && culturalTabs[activeTab].length === 0 && (
+                  <EmptySection message="This part of the archive is still growing. Check back soon." />
+                )}
                 <div className="grid gap-8">
                   {culturalTabs[activeTab].map((item, index) => (
                     <ScrollRevealSection key={index}>
@@ -148,6 +172,8 @@ export const ArchivePage: React.FC = () => {
                                 <img
                                   src={item.image}
                                   alt={item.name}
+                                  loading="lazy"
+                                  decoding="async"
                                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                 />
                               </div>
@@ -213,11 +239,11 @@ export const ArchivePage: React.FC = () => {
                                 </button>
                               ) : (
                                 <div className="mt-8 space-y-8 bg-green-50/50 p-8 rounded-2xl border border-green-100">
-                                  {Array.isArray((item as any).ingredients) && (item as any).ingredients.length > 0 && (
+                                  {Array.isArray(item.ingredients) && item.ingredients.length > 0 && (
                                     <div>
                                       <span className="font-bold text-green-900 block mb-4 text-lg font-serif border-b border-green-200 pb-2">Ingredients</span>
                                       <ul className="grid md:grid-cols-2 gap-3 text-green-800">
-                                        {(item as any).ingredients.map((ing: string, idx: number) => (
+                                        {item.ingredients.map((ing: string, idx: number) => (
                                           <li key={idx} className="flex items-center gap-3">
                                             <span className="w-2 h-2 bg-amber-500 rounded-full flex-shrink-0" />
                                             {ing}
@@ -227,11 +253,11 @@ export const ArchivePage: React.FC = () => {
                                     </div>
                                   )}
 
-                                  {Array.isArray((item as any).prep) && (item as any).prep.length > 0 && (
+                                  {Array.isArray(item.prep) && item.prep.length > 0 && (
                                     <div>
                                       <span className="font-bold text-green-900 block mb-4 text-lg font-serif border-b border-green-200 pb-2">Preparation</span>
                                       <ol className="space-y-4 text-green-800">
-                                        {(item as any).prep.map((step: string, idx: number) => (
+                                        {item.prep.map((step: string, idx: number) => (
                                           <li key={idx} className="flex gap-4">
                                             <span className="font-bold text-amber-600 bg-amber-100 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0">{idx + 1}</span>
                                             <span className="pt-1">{step}</span>
@@ -251,19 +277,20 @@ export const ArchivePage: React.FC = () => {
                             </div>
                           )}
 
-                          {activeTab === 'songs' && (item as any).audio && (
+                          {activeTab === 'songs' && item.audio != null && (
                             <div className="relative z-10 mt-6">
-                              <AudioPlayer src={urlForFile((item as any).audio)} title={item.name} />
+                              <AudioPlayer src={urlForFile(item.audio as Parameters<typeof urlForFile>[0])} title={item.name} />
                             </div>
                           )}
 
-                          {activeTab === 'songs' && (item as any).link && (
+                          {activeTab === 'songs' && item.link && getYouTubeId(item.link) && (
                             <div className="relative z-10 mt-6">
                               <div className="rounded-2xl overflow-hidden shadow-lg border-4 border-white">
                                 <iframe
                                   width="100%"
                                   height="315"
-                                  src={`https://www.youtube.com/embed/${(item as any).link.split('v=')[1]}`}
+                                  loading="lazy"
+                                  src={`https://www.youtube.com/embed/${getYouTubeId(item.link)}`}
                                   title={item.name}
                                   frameBorder="0"
                                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -296,10 +323,13 @@ export const ArchivePage: React.FC = () => {
             <p className="text-xl md:text-2xl text-green-100 mb-12 max-w-2xl mx-auto font-light leading-relaxed">
               Help us preserve our heritage by sharing your family recipes, songs, and stories.
             </p>
-            <button className="bg-amber-500 hover:bg-amber-400 text-white px-12 py-5 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center gap-3 mx-auto">
+            <a
+              href="mailto:pranab.rai@coss.org.in?subject=Ikirati%20Archive%20Contribution"
+              className="bg-amber-500 hover:bg-amber-400 text-white px-12 py-5 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl inline-flex items-center gap-3 mx-auto"
+            >
               <Share2 className="w-5 h-5" />
               Submit Content
-            </button>
+            </a>
           </ScrollRevealSection>
         </div>
       </section>

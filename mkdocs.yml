@@ -21,3 +21,4 @@ nav:
   - Home: index.md
   - Backend: backend/index.md
   - Frontend: frontend/index.md
+  - Studio: studio/index.md

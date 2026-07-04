@@ -1,17 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import mountainImage from '../assets/mountain.webp';
 import { AudioPlayer } from '../components/AudioPlayer';
-import { languageRecordings } from '../data';
 import { ScrollRevealSection } from '../components/ScrollReveal';
 import { HeroOverlay } from '../components/HeroOverlay';
+import { urlForFile } from '../lib/sanity';
+import { useSanityQuery } from '../hooks/useSanityQuery';
+import { useScrollY } from '../hooks/useScrollY';
+import { LoadingSection, ErrorSection, EmptySection } from '../components/DataState';
+import { usePageMeta } from '../hooks/usePageMeta';
+
+type VocabularyEntry = {
+  word: string;
+  language: string;
+  translation: string;
+  pronunciation?: string;
+  example?: string;
+  audio: unknown;
+};
+
+const VOCABULARY_QUERY = `*[_type == "vocabularyEntry"] | order(language asc, word asc){word, language, translation, pronunciation, example, audio}`;
+
+const LANGUAGE_LABELS: Record<string, string> = {
+  limbu: 'Limbu',
+  'rai-bantawa': 'Rai (Bantawa)',
+  'rai-chamling': 'Rai (Chamling)',
+  'rai-kulung': 'Rai (Kulung)',
+  yakkha: 'Yakkha',
+  sunuwar: 'Sunuwar',
+};
 
 export const LanguagePage: React.FC = () => {
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  usePageMeta('Language', 'Kirati language preservation: Limbu, Rai, Yakkha, and Sunuwar vocabulary and pronunciation recordings.');
+  const scrollY = useScrollY();
+  const { data, loading, error, retry } = useSanityQuery<VocabularyEntry[]>(VOCABULARY_QUERY);
+  const entries = data ?? [];
+  const recordings = entries.filter((e) => e.audio);
+  const languageCount = new Set(entries.map((e) => e.language)).size;
 
   return (
     <div className="overflow-x-hidden">
@@ -20,159 +44,96 @@ export const LanguagePage: React.FC = () => {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100 ease-out"
           style={{
-            backgroundImage: "url('https://images.pexels.com/photos/3756766/pexels-photo-3756766.jpeg?auto=compress&cs=tinysrgb&w=1600')",
+            backgroundImage: `url(${mountainImage})`,
             transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0005})`
           }}
         />
         <HeroOverlay />
 
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-xl">
-            Our Native Tongue
+            Our Native Tongues
           </h1>
           <p className="text-xl md:text-2xl text-amber-100 drop-shadow-md max-w-2xl mx-auto">
-            Language is the soul of a people. With only 12 fluent speakers remaining,
-            every word saved is a victory against time.
+            Limbu, Rai, Yakkha, Sunuwar — every word recorded keeps a Kirati language alive.
           </p>
         </div>
       </section>
 
-      {/* Language Stats & Word of the Day */}
+      {/* Language Stats & Vocabulary */}
       <section className="py-20 px-6 bg-amber-50">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <ScrollRevealSection>
-              <div>
-                <h2 className="text-4xl font-bold text-green-900 mb-6">
-                  Preserving Our Language
-                </h2>
-                <p className="text-xl text-green-700 mb-8 leading-relaxed">
-                  Every conversation, every recording, every lesson brings us closer to
-                  ensuring our language survives for future generations.
-                </p>
+          {loading && <LoadingSection label="Loading vocabulary" />}
+          {!loading && error && <ErrorSection onRetry={retry} />}
+          {!loading && !error && entries.length === 0 && (
+            <EmptySection message="Our vocabulary archive is just beginning. Words and recordings will appear here as the community contributes." />
+          )}
 
-                <div className="space-y-6 mb-8">
-                  <div className="bg-white p-8 rounded-2xl shadow-lg border border-amber-100">
-                    <h4 className="font-bold text-green-900 mb-3 text-lg uppercase tracking-wide">Word of the Day</h4>
-                    <p className="text-4xl font-bold text-amber-600 mb-2">Yaku-tani</p>
-                    <p className="text-green-700 text-lg italic">Sacred mountain where spirits dwell</p>
-                  </div>
+          {!loading && !error && entries.length > 0 && (
+            <div className="grid md:grid-cols-2 gap-12 items-start">
+              <ScrollRevealSection>
+                <div>
+                  <h2 className="text-4xl font-bold text-green-900 mb-6">
+                    Preserving Our Languages
+                  </h2>
+                  <p className="text-xl text-green-700 mb-8 leading-relaxed">
+                    Every conversation, every recording, every lesson brings us closer to
+                    ensuring Kirati languages survive for future generations.
+                  </p>
 
-                  <div className="grid grid-cols-2 gap-6">
+                  <div className="grid grid-cols-2 gap-6 mb-8">
                     <div className="text-center p-8 bg-green-100 rounded-2xl shadow-md">
-                      <div className="text-5xl font-bold text-green-800 mb-2">847</div>
+                      <div className="text-5xl font-bold text-green-800 mb-2">{entries.length}</div>
                       <div className="text-green-700 font-medium">Words Preserved</div>
                     </div>
                     <div className="text-center p-8 bg-amber-100 rounded-2xl shadow-md">
-                      <div className="text-5xl font-bold text-amber-600 mb-2">12</div>
-                      <div className="text-amber-800 font-medium">Fluent Speakers</div>
+                      <div className="text-5xl font-bold text-amber-600 mb-2">{languageCount}</div>
+                      <div className="text-amber-800 font-medium">Languages Documented</div>
                     </div>
                   </div>
-                </div>
 
-                <button className="bg-green-600 hover:bg-green-700 text-white px-10 py-4 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                  Learn Our Language
-                </button>
-              </div>
-            </ScrollRevealSection>
-
-            <ScrollRevealSection className="delay-200">
-              <div className="relative">
-                <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 border border-green-50">
-                  <h3 className="text-2xl font-bold text-green-900 mb-8 border-b border-green-100 pb-4">Recent Recordings</h3>
-                  <div className="space-y-6">
-                    {languageRecordings.map((recording, index) => (
-                      <div key={index} className="bg-green-50 rounded-xl p-4">
-                        <AudioPlayer
-                          src={recording.audioSrc}
-                          title={`${recording.title} - ${recording.speaker} `}
-                        />
+                  <div className="space-y-4">
+                    {entries.map((entry) => (
+                      <div key={`${entry.language}-${entry.word}`} className="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm gap-4">
+                        <div>
+                          <span className="text-green-800 font-bold text-lg">{entry.word}</span>
+                          {entry.pronunciation && (
+                            <span className="text-green-500 text-sm ml-2">/{entry.pronunciation}/</span>
+                          )}
+                          <p className="text-xs text-amber-700 uppercase tracking-wide mt-1">
+                            {LANGUAGE_LABELS[entry.language] ?? entry.language}
+                          </p>
+                        </div>
+                        <span className="text-green-600 italic text-right">{entry.translation}</span>
                       </div>
                     ))}
                   </div>
                 </div>
-              </div>
-            </ScrollRevealSection>
-          </div>
-        </div>
-      </section>
+              </ScrollRevealSection>
 
-      {/* Language Learning Resources */}
-      <section className="py-24 px-6 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <ScrollRevealSection>
-            <h2 className="text-4xl font-bold text-green-900 mb-16 text-center">
-              Learning Resources
-            </h2>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="bg-green-50 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-green-100 group">
-                <h3 className="text-2xl font-bold text-green-900 mb-4 group-hover:text-amber-600 transition-colors">Basic Vocabulary</h3>
-                <p className="text-green-700 mb-8">
-                  Start your journey with essential words and phrases used in daily life.
-                </p>
-                <div className="space-y-4 mb-8">
-                  <div className="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm">
-                    <span className="text-green-800 font-bold text-lg">Ama</span>
-                    <span className="text-green-600 italic">Mother</span>
-                  </div>
-                  <div className="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm">
-                    <span className="text-green-800 font-bold text-lg">Tayta</span>
-                    <span className="text-green-600 italic">Father</span>
-                  </div>
-                  <div className="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm">
-                    <span className="text-green-800 font-bold text-lg">Wasi</span>
-                    <span className="text-green-600 italic">House</span>
-                  </div>
+              <ScrollRevealSection className="delay-200">
+                <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-10 border border-green-50">
+                  <h3 className="text-2xl font-bold text-green-900 mb-8 border-b border-green-100 pb-4">Pronunciation Recordings</h3>
+                  {recordings.length === 0 ? (
+                    <p className="text-green-700">
+                      Audio recordings from native speakers will appear here as they are added.
+                    </p>
+                  ) : (
+                    <div className="space-y-6">
+                      {recordings.map((entry) => (
+                        <div key={`${entry.language}-${entry.word}-audio`} className="bg-green-50 rounded-xl p-4">
+                          <AudioPlayer
+                            src={urlForFile(entry.audio as Parameters<typeof urlForFile>[0])}
+                            title={`${entry.word} — ${entry.translation}`}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <button className="w-full bg-green-200 hover:bg-green-300 text-green-900 py-3 rounded-full font-bold transition-colors">
-                  View All Words
-                </button>
-              </div>
-
-              <div className="bg-amber-50 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-amber-100 group">
-                <h3 className="text-2xl font-bold text-green-900 mb-4 group-hover:text-amber-600 transition-colors">Pronunciation Guide</h3>
-                <p className="text-green-700 mb-8">
-                  Learn the correct pronunciation with audio examples from native speakers.
-                </p>
-                <div className="space-y-6 mb-8">
-                  <div className="bg-white p-4 rounded-xl shadow-sm">
-                    <AudioPlayer
-                      src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"
-                      title="Pronunciation: Greetings"
-                    />
-                  </div>
-                  <div className="bg-white p-4 rounded-xl shadow-sm">
-                    <AudioPlayer
-                      src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"
-                      title="Pronunciation: Numbers"
-                    />
-                  </div>
-                </div>
-                <button className="w-full bg-amber-200 hover:bg-amber-300 text-amber-900 py-3 rounded-full font-bold transition-colors">
-                  Practice Speaking
-                </button>
-              </div>
-
-              <div className="bg-green-50 rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-green-100 group">
-                <h3 className="text-2xl font-bold text-green-900 mb-4 group-hover:text-amber-600 transition-colors">Cultural Context</h3>
-                <p className="text-green-700 mb-8">
-                  Understand the deeper meaning behind words and their cultural significance.
-                </p>
-                <div className="bg-white p-6 rounded-xl shadow-sm mb-8 border-l-4 border-amber-500">
-                  <h4 className="font-bold text-green-900 mb-2">Sacred Words</h4>
-                  <p className="text-green-700 text-sm leading-relaxed">
-                    Many words in our language carry spiritual meaning and are used
-                    only in specific ceremonies or contexts.
-                  </p>
-                </div>
-                <button className="w-full bg-green-200 hover:bg-green-300 text-green-900 py-3 rounded-full font-bold transition-colors">
-                  Learn Context
-                </button>
-              </div>
+              </ScrollRevealSection>
             </div>
-          </ScrollRevealSection>
+          )}
         </div>
       </section>
 
@@ -182,20 +143,18 @@ export const LanguagePage: React.FC = () => {
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <ScrollRevealSection>
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-8">
-              Help Preserve Our Language
+              Help Preserve Our Languages
             </h2>
             <p className="text-xl text-green-100 mb-10 max-w-2xl mx-auto leading-relaxed">
               Join our language preservation efforts. Every recording, every lesson,
-              every conversation helps keep our language alive.
+              every conversation helps keep Kirati languages alive.
             </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <button className="bg-amber-500 hover:bg-amber-400 text-white px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl">
-                Volunteer to Record
-              </button>
-              <button className="border-2 border-white text-white hover:bg-white hover:text-green-900 px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 hover:shadow-lg">
-                Join Language Classes
-              </button>
-            </div>
+            <a
+              href="mailto:pranab.rai@coss.org.in?subject=Ikirati%20Language%20Recording"
+              className="inline-block bg-amber-500 hover:bg-amber-400 text-white px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+            >
+              Volunteer to Record
+            </a>
           </ScrollRevealSection>
         </div>
       </section>

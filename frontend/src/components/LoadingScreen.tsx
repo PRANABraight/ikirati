@@ -2,7 +2,11 @@ import React from 'react';
 
 export const LoadingScreen: React.FC = () => {
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-green-950/40 backdrop-blur-xl transition-all duration-500">
+    <div
+      role="status"
+      aria-label="Loading Kirati Heritage"
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-green-950/40 backdrop-blur-xl transition-all duration-500"
+    >
       <div className="relative p-10 rounded-full bg-white/5 backdrop-blur-md shadow-2xl border border-white/10 animate-pulse-slow">
         <svg
           width="120"

@@ -3,6 +3,13 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Refuse to run in production with missing DB credentials; the localhost/root
+// fallbacks below are for local development only.
+if (process.env.NODE_ENV === 'production' && (!process.env.DB_USER || !process.env.DB_PASSWORD)) {
+    console.error('FATAL: DB_USER and DB_PASSWORD must be set in production.');
+    process.exit(1);
+}
+
 // Create connection pool
 const pool = mysql.createPool({
     host: process.env.DB_HOST || 'localhost',

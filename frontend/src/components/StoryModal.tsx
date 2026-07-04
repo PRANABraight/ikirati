@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, User, Clock } from 'lucide-react';
+import { Modal } from './Modal';
 
 interface Story {
     image: string;
@@ -19,11 +20,12 @@ export const StoryModal: React.FC<StoryModalProps> = ({ isOpen, onClose, story }
     if (!isOpen || !story) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in" onClick={onClose}>
-            <div
-                className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] shadow-2xl transform transition-all animate-scale-up flex flex-col overflow-hidden"
-                onClick={e => e.stopPropagation()}
-            >
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            label={story.title}
+            panelClassName="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] shadow-2xl transform transition-all animate-scale-up flex flex-col overflow-hidden"
+        >
                 {/* Header Image */}
                 <div className="relative h-64 shrink-0">
                     <img
@@ -34,6 +36,7 @@ export const StoryModal: React.FC<StoryModalProps> = ({ isOpen, onClose, story }
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                     <button
                         onClick={onClose}
+                        aria-label="Close story"
                         className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors backdrop-blur-sm"
                     >
                         <X className="w-6 h-6" />
@@ -86,7 +89,6 @@ export const StoryModal: React.FC<StoryModalProps> = ({ isOpen, onClose, story }
                         )}
                     </div>
                 </div>
-            </div>
-        </div>
+        </Modal>
     );
 };

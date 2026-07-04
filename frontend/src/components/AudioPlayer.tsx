@@ -59,14 +59,11 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, title, className 
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const audio = audioRef.current;
-    if (!audio || !duration) return;
+    if (!audio) return;
 
-    const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const newTime = (clickX / rect.width) * duration;
-    
+    const newTime = Number(e.target.value);
     audio.currentTime = newTime;
     setCurrentTime(newTime);
   };
@@ -78,6 +75,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, title, className 
       <div className="flex items-center gap-3 mb-3">
         <button
           onClick={togglePlay}
+          aria-label={isPlaying ? `Pause ${title}` : `Play ${title}`}
           className="p-2 bg-green-100 hover:bg-green-200 rounded-full transition-colors"
         >
           {isPlaying ? (
@@ -98,6 +96,7 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, title, className 
 
         <button
           onClick={toggleMute}
+          aria-label={isMuted ? 'Unmute' : 'Mute'}
           className="p-2 hover:bg-gray-100 rounded-full transition-colors"
         >
           {isMuted ? (
@@ -108,15 +107,16 @@ export const AudioPlayer: React.FC<AudioPlayerProps> = ({ src, title, className 
         </button>
       </div>
 
-      <div 
-        className="w-full h-2 bg-gray-200 rounded-full cursor-pointer"
-        onClick={handleProgressClick}
-      >
-        <div 
-          className="h-full bg-green-500 rounded-full transition-all duration-100"
-          style={{ width: duration ? `${(currentTime / duration) * 100}%` : '0%' }}
-        />
-      </div>
+      <input
+        type="range"
+        min={0}
+        max={duration || 0}
+        step={0.1}
+        value={currentTime}
+        onChange={handleSeek}
+        aria-label={`Seek position for ${title}`}
+        className="w-full h-2 cursor-pointer accent-green-600"
+      />
     </div>
   );
 };

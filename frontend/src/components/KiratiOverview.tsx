@@ -29,7 +29,7 @@ const KiratiOverview: React.FC = () => (
           { name: "Yakkha", desc: "Custodians of unique agricultural practices and rituals." },
           { name: "Sunuwar", desc: "Skilled artisans and warriors with a deep bond to the land." }
         ].map((group, index) => (
-          <ScrollRevealSection key={index} className={`delay-${index * 100}`}>
+          <ScrollRevealSection key={index} className={['', 'delay-100', 'delay-200'][index % 3]}>
             <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-amber-100 group hover:-translate-y-2 h-full">
               <div className="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center mb-6 group-hover:bg-amber-500 transition-colors duration-300">
                 <Users className="w-7 h-7 text-green-700 group-hover:text-white" />

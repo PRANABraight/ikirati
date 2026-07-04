@@ -5,28 +5,37 @@ import YalambarImage from '../assets/couple.webp';
 import KiratiOverview from '../components/KiratiOverview';
 import { ScrollRevealSection } from '../components/ScrollReveal';
 import { TimelineModal } from '../components/TimelineModal';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 export const TimelinePage: React.FC = () => {
+  usePageMeta('Timeline', 'An interactive timeline of Kirati history, from ancient Himalayan settlements to the modern cultural revival.');
   const [scrollY, setScrollY] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [selectedEvent, setSelectedEvent] = useState<typeof timeline[0] | null>(null);
 
   useEffect(() => {
+    let raf = 0;
     const handleScroll = () => {
-      setScrollY(window.scrollY);
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        setScrollY(window.scrollY);
 
-      // Calculate scroll progress for the timeline section
-      const timelineSection = document.getElementById('timeline-section');
-      if (timelineSection) {
-        const { top, height } = timelineSection.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-        const progress = Math.min(Math.max((windowHeight - top) / (height + windowHeight) * 100, 0), 100);
-        setScrollProgress(progress);
-      }
+        // Calculate scroll progress for the timeline section
+        const timelineSection = document.getElementById('timeline-section');
+        if (timelineSection) {
+          const { top, height } = timelineSection.getBoundingClientRect();
+          const windowHeight = window.innerHeight;
+          const progress = Math.min(Math.max((windowHeight - top) / (height + windowHeight) * 100, 0), 100);
+          setScrollProgress(progress);
+        }
+      });
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   const getIcon = (iconName: string) => {
@@ -268,10 +277,13 @@ export const TimelinePage: React.FC = () => {
               Do you have historical information, photos, or stories that could enrich our timeline?
               Help us build a more complete picture of our community's journey.
             </p>
-            <button className="bg-amber-500 hover:bg-amber-400 text-white px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center gap-3 mx-auto">
+            <a
+              href="mailto:pranab.rai@coss.org.in?subject=Ikirati%20Timeline%20Contribution"
+              className="bg-amber-500 hover:bg-amber-400 text-white px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl inline-flex items-center gap-3 mx-auto"
+            >
               <BookOpen className="w-6 h-6" />
               Contribute to Timeline
-            </button>
+            </a>
           </ScrollRevealSection>
         </div>
       </section>

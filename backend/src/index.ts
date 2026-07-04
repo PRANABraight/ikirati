@@ -7,17 +7,24 @@ import path from 'path';
 import authRoutes from './routes/auth';
 import storiesRoutes from './routes/stories';
 import { testConnection, initDatabase } from './db';
+import { getJwtSecret } from './config';
 
 dotenv.config();
 
 const app = express();
+
+// Behind a reverse proxy/load balancer, trust the first hop so rate limiting
+// keys on real client IPs instead of the proxy's.
+if (process.env.TRUST_PROXY === '1' || process.env.TRUST_PROXY === 'true') {
+    app.set('trust proxy', 1);
+}
 
 // Security middleware - configure helmet for serving frontend
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'"],
+            scriptSrc: ["'self'"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
             imgSrc: ["'self'", "data:", "https:", "blob:"],
@@ -69,17 +76,22 @@ const frontendDistPath = path.join(__dirname, '../../frontend/dist');
 app.use(express.static(frontendDistPath));
 
 // SPA catch-all route - serve index.html for all non-API routes
-app.get('*', (req, res) => {
-    // Only serve index.html for non-API routes
-    if (!req.path.startsWith('/api')) {
-        res.sendFile(path.join(frontendDistPath, 'index.html'));
+app.all('*', (req, res) => {
+    if (req.path.startsWith('/api')) {
+        return res.status(404).json({ error: 'Not found' });
     }
+    res.sendFile(path.join(frontendDistPath, 'index.html'));
 });
 
-// Environment validation
-if (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'secret') {
-    console.warn('⚠️  WARNING: JWT_SECRET is not set or using default value. Please set a strong secret in production!');
-}
+// Global error handler - log server-side, never leak stack traces to clients
+app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error('Unhandled error:', err);
+    if (res.headersSent) return next(err);
+    res.status(500).json({ error: 'Internal server error' });
+});
+
+// Environment validation - exits in production if JWT_SECRET is unset/placeholder
+getJwtSecret();
 
 const PORT = process.env.PORT || 4000;
 

@@ -1,28 +1,45 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import culturImage from '../assets/cultur.webp';
 import { X } from 'lucide-react';
-import { galleryImages } from '../data';
 import { ScrollRevealSection } from '../components/ScrollReveal';
 import { HeroOverlay } from '../components/HeroOverlay';
+import { Modal } from '../components/Modal';
+import { urlFor } from '../lib/sanity';
+import { useSanityQuery } from '../hooks/useSanityQuery';
+import { useScrollY } from '../hooks/useScrollY';
+import { LoadingSection, ErrorSection, EmptySection } from '../components/DataState';
+import { usePageMeta } from '../hooks/usePageMeta';
+
+type GalleryImage = {
+  title: string;
+  description?: string;
+  image: unknown;
+  category?: string;
+};
+
+const GALLERY_QUERY = `*[_type == "galleryImage"] | order(title asc){title, description, image, category}`;
+
+const CATEGORY_LABELS: Record<string, string> = {
+  'sacred-places': 'Sacred Places',
+  'traditional-crafts': 'Traditional Crafts',
+  'community-events': 'Community Events',
+  'historical-photos': 'Historical Photos',
+  landscape: 'Landscape',
+};
 
 export const GalleryPage: React.FC = () => {
+  usePageMeta('Gallery', 'A visual archive of Kirati sacred places, crafts, community events, and historical photos.');
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
-  const [scrollY, setScrollY] = useState(0);
+  const scrollY = useScrollY();
+  const { data, loading, error, retry } = useSanityQuery<GalleryImage[]>(GALLERY_QUERY);
+  const allImages = data ?? [];
 
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const categoryCounts = allImages.reduce<Record<string, number>>((acc, img) => {
+    if (img.category) acc[img.category] = (acc[img.category] ?? 0) + 1;
+    return acc;
+  }, {});
 
-  const allImages = [
-    ...galleryImages,
-    ...galleryImages.map((img, index) => ({
-      ...img,
-      title: `${img.title} - View ${index + 4}`,
-      image: img.image.replace('w=800', 'w=1200')
-    }))
-  ];
+  const selected = selectedImage !== null ? allImages[selectedImage] : null;
 
   return (
     <div className="overflow-x-hidden">
@@ -31,14 +48,13 @@ export const GalleryPage: React.FC = () => {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100 ease-out"
           style={{
-            backgroundImage: `url(${culturImage})`, // Reusing cultural image or specific gallery hero
+            backgroundImage: `url(${culturImage})`,
             transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0005})`
           }}
         />
         <HeroOverlay />
 
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-xl">
             Heritage Gallery
           </h1>
@@ -51,17 +67,26 @@ export const GalleryPage: React.FC = () => {
       {/* Gallery Grid */}
       <section className="py-20 px-6 bg-amber-50">
         <div className="max-w-7xl mx-auto">
+          {loading && <LoadingSection label="Loading gallery" />}
+          {!loading && error && <ErrorSection onRetry={retry} />}
+          {!loading && !error && allImages.length === 0 && (
+            <EmptySection message="Our photo archive is just beginning. Community photos will appear here as they are contributed." />
+          )}
           <div className="grid md:grid-cols-3 gap-8">
             {allImages.map((item, index) => (
-              <ScrollRevealSection key={index} className={`delay-${(index % 3) * 100}`}>
-                <div
-                  className="group relative overflow-hidden rounded-2xl shadow-xl cursor-pointer border-4 border-white hover:border-amber-300 transition-all duration-300"
+              <ScrollRevealSection key={item.title} className={['', 'delay-100', 'delay-200'][index % 3]}>
+                <button
+                  type="button"
+                  className="group relative overflow-hidden rounded-2xl shadow-xl cursor-pointer border-4 border-white hover:border-amber-300 transition-all duration-300 w-full text-left"
                   onClick={() => setSelectedImage(index)}
+                  aria-label={`View ${item.title}`}
                 >
                   <div className="aspect-[4/5] overflow-hidden">
                     <img
-                      src={item.image}
+                      src={urlFor(item.image as Parameters<typeof urlFor>[0]).width(800).auto('format').url()}
                       alt={item.title}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                   </div>
@@ -70,68 +95,73 @@ export const GalleryPage: React.FC = () => {
                     <h3 className="text-2xl font-bold mb-2">{item.title}</h3>
                     <p className="text-amber-200">{item.description}</p>
                   </div>
-                </div>
+                </button>
               </ScrollRevealSection>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Image Modal */}
-      {selectedImage !== null && (
-        <div className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={() => setSelectedImage(null)}>
-          <div className="relative max-w-5xl w-full" onClick={e => e.stopPropagation()}>
-            <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute -top-12 right-0 p-2 text-white hover:text-amber-400 transition-colors z-10"
-            >
-              <X className="w-8 h-8" />
-            </button>
+      {/* Image Lightbox */}
+      {selected && (
+        <Modal
+          isOpen={selectedImage !== null}
+          onClose={() => setSelectedImage(null)}
+          label={selected.title}
+          overlayClassName="bg-black/95 backdrop-blur-sm"
+          panelClassName="relative max-w-5xl w-full"
+        >
+          <button
+            onClick={() => setSelectedImage(null)}
+            aria-label="Close image"
+            className="absolute -top-12 right-0 p-2 text-white hover:text-amber-400 transition-colors z-10"
+          >
+            <X className="w-8 h-8" />
+          </button>
 
-            <div className="relative rounded-lg overflow-hidden shadow-2xl border border-white/10">
-              <img
-                src={allImages[selectedImage].image}
-                alt={allImages[selectedImage].title}
-                className="w-full h-auto max-h-[80vh] object-contain bg-black"
-              />
+          <div className="relative rounded-lg overflow-hidden shadow-2xl border border-white/10">
+            <img
+              src={urlFor(selected.image as Parameters<typeof urlFor>[0]).width(1600).auto('format').url()}
+              alt={selected.title}
+              className="w-full h-auto max-h-[80vh] object-contain bg-black"
+            />
 
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-8">
-                <h3 className="text-3xl font-bold text-white mb-2">
-                  {allImages[selectedImage].title}
-                </h3>
-                <p className="text-xl text-gray-200">
-                  {allImages[selectedImage].description}
-                </p>
-              </div>
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-8">
+              <h3 className="text-3xl font-bold text-white mb-2">
+                {selected.title}
+              </h3>
+              <p className="text-xl text-gray-200">
+                {selected.description}
+              </p>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
 
       {/* Photo Categories */}
-      <section className="py-24 px-6 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <ScrollRevealSection>
-            <h2 className="text-4xl font-bold text-green-900 mb-16 text-center">
-              Photo Categories
-            </h2>
+      {Object.keys(categoryCounts).length > 0 && (
+        <section className="py-24 px-6 bg-white">
+          <div className="max-w-6xl mx-auto">
+            <ScrollRevealSection>
+              <h2 className="text-4xl font-bold text-green-900 mb-16 text-center">
+                Photo Categories
+              </h2>
 
-            <div className="grid md:grid-cols-4 gap-6">
-              {[
-                { name: 'Sacred Places', count: 24, color: 'bg-green-100 text-green-800' },
-                { name: 'Traditional Crafts', count: 18, color: 'bg-amber-100 text-amber-800' },
-                { name: 'Community Events', count: 32, color: 'bg-green-100 text-green-800' },
-                { name: 'Historical Photos', count: 15, color: 'bg-amber-100 text-amber-800' }
-              ].map((category, index) => (
-                <div key={index} className={`${category.color} rounded-2xl p-8 shadow-lg text-center hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1`}>
-                  <h3 className="text-xl font-bold mb-2">{category.name}</h3>
-                  <p className="opacity-80 font-medium">{category.count} photos</p>
-                </div>
-              ))}
-            </div>
-          </ScrollRevealSection>
-        </div>
-      </section>
+              <div className="grid md:grid-cols-4 gap-6">
+                {Object.entries(categoryCounts).map(([category, count], index) => (
+                  <div
+                    key={category}
+                    className={`${index % 2 === 0 ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'} rounded-2xl p-8 shadow-lg text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1`}
+                  >
+                    <h3 className="text-xl font-bold mb-2">{CATEGORY_LABELS[category] ?? category}</h3>
+                    <p className="opacity-80 font-medium">{count} {count === 1 ? 'photo' : 'photos'}</p>
+                  </div>
+                ))}
+              </div>
+            </ScrollRevealSection>
+          </div>
+        </section>
+      )}
 
       {/* Contribute Photos */}
       <section className="py-24 px-6 bg-green-900 relative overflow-hidden">
@@ -145,9 +175,12 @@ export const GalleryPage: React.FC = () => {
               Help us build our visual archive by sharing photos of our community,
               traditions, and sacred places.
             </p>
-            <button className="bg-amber-500 hover:bg-amber-400 text-white px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl">
-              Upload Photos
-            </button>
+            <a
+              href="mailto:pranab.rai@coss.org.in?subject=Ikirati%20Photo%20Contribution"
+              className="inline-block bg-amber-500 hover:bg-amber-400 text-white px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+            >
+              Contribute Photos
+            </a>
           </ScrollRevealSection>
         </div>
       </section>

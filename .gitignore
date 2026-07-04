@@ -1,8 +1,14 @@
-/frontend/node_modules
+node_modules/
 /frontend/nul
-/backend/node_modules
-/backend/.env
-/node_modules
+
+# Environment files (never commit secrets)
+.env
+.env.local
+.env.*.local
+
+# Build output
+dist/
 site/
+*.tsbuildinfo
+
 /scripts/
-/studio/node_modules/

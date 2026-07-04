@@ -1,15 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import culturImage from '../assets/cultur.webp';
 import elderImage from '../assets/elder.jpg';
+import mountainImage from '../assets/mountain.webp';
 import { Link } from 'react-router-dom';
-// ... (rest of imports)
-
-// ... (inside component)
-
-
 import {
   Heart,
-
   Mail,
   ArrowRight,
   Music,
@@ -19,11 +14,14 @@ import { stories } from '../data';
 
 import { ScrollRevealSection } from '../components/ScrollReveal';
 import { HeroOverlay } from '../components/HeroOverlay';
+import { useScrollY } from '../hooks/useScrollY';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 export const HomePage: React.FC = () => {
+  usePageMeta();
   const [currentStory, setCurrentStory] = useState(0);
   const [heroVisible, setHeroVisible] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
+  const scrollY = useScrollY();
 
   useEffect(() => {
     setHeroVisible(true);
@@ -31,13 +29,7 @@ export const HomePage: React.FC = () => {
       setCurrentStory(prev => (prev + 1) % stories.length);
     }, 5000);
 
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      clearInterval(timer);
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => clearInterval(timer);
   }, []);
 
   return (
@@ -47,7 +39,7 @@ export const HomePage: React.FC = () => {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100 ease-out"
           style={{
-            backgroundImage: "url('https://images.pexels.com/photos/1666021/pexels-photo-1666021.jpeg?auto=compress&cs=tinysrgb&w=1600')",
+            backgroundImage: `url(${mountainImage})`,
             transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0005})`
           }}
         />
@@ -139,10 +131,11 @@ export const HomePage: React.FC = () => {
                       </p>
                     </div>
                     <div className="flex gap-2">
-                      {stories.map((_, idx) => (
+                      {stories.map((story, idx) => (
                         <button
                           key={idx}
                           onClick={() => setCurrentStory(idx)}
+                          aria-label={`Show story: ${story.title}`}
                           className={`w-3 h-3 rounded-full transition-all duration-300 ${idx === currentStory ? 'bg-amber-500 w-8' : 'bg-green-200 hover:bg-green-300'
                             }`}
                         />
@@ -163,6 +156,8 @@ export const HomePage: React.FC = () => {
             <img
               src={culturImage}
               alt="Cultural Archive"
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-green-900/40 group-hover:bg-green-900/30 transition-colors" />
@@ -215,6 +210,8 @@ export const HomePage: React.FC = () => {
             <img
               src={elderImage}
               alt="Timeline"
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-amber-900/20 group-hover:bg-amber-900/10 transition-colors" />
@@ -237,34 +234,13 @@ export const HomePage: React.FC = () => {
               Your participation is the heartbeat of our community. Join us in celebrating and preserving our unique heritage.
             </p>
 
-            {/* <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
-              <Link
-                to="/events"
-                className="bg-amber-500 hover:bg-amber-400 text-white px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl flex items-center justify-center gap-3"
-              >
-                <Users className="w-6 h-6" />
-                Join Community
-              </Link>
-              <Link
-                to="/gallery"
-                className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-green-900 px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 flex items-center justify-center gap-3"
-              >
-                <Camera className="w-6 h-6" />
-                Share Memories
-              </Link>
-            </div> */}
-
-            <div className="max-w-lg mx-auto bg-white/10 backdrop-blur-sm p-2 rounded-3xl sm:rounded-full flex flex-col sm:flex-row gap-2 sm:gap-0">
-              <input
-                type="email"
-                placeholder="Enter your email for updates"
-                className="w-full sm:w-auto flex-1 px-6 py-3 bg-transparent text-white placeholder-green-200 focus:outline-none text-lg text-center sm:text-left"
-              />
-              <button className="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 px-8 py-3 rounded-2xl sm:rounded-full text-white font-bold transition-colors shadow-lg flex items-center justify-center font-serif">
-                <Mail className="w-5 h-5 mr-2" />
-                Subscribe
-              </button>
-            </div>
+            <a
+              href="mailto:pranab.rai@coss.org.in?subject=Ikirati%20Community"
+              className="inline-flex items-center gap-3 bg-amber-500 hover:bg-amber-400 text-white px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl font-serif"
+            >
+              <Mail className="w-5 h-5" />
+              Get Involved
+            </a>
           </ScrollRevealSection>
         </div>
       </section>

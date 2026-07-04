@@ -1,6 +1,7 @@
 import React from 'react';
-import { Calendar } from 'lucide-react';
+import { Calendar, X } from 'lucide-react';
 import { timeline } from '../data';
+import { Modal } from './Modal';
 
 interface TimelineModalProps {
     isOpen: boolean;
@@ -13,23 +14,24 @@ export const TimelineModal: React.FC<TimelineModalProps> = ({ isOpen, onClose, e
     if (!isOpen || !event) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
-            <div className="absolute inset-0 bg-green-950/80 backdrop-blur-sm" />
-
-            <div
-                className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden animate-scale-up"
-                onClick={e => e.stopPropagation()}
-            >
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            label={`${event.year}: ${event.event}`}
+            overlayClassName="bg-green-950/80 backdrop-blur-sm"
+            panelClassName="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden animate-scale-up"
+        >
                 {/* Header */}
                 <div className="relative h-48 bg-gradient-to-r from-green-900 to-green-800 p-8 flex flex-col justify-end">
-                    {/* <div className="absolute top-0 right-0 p-4">
+                    <div className="absolute top-0 right-0 p-4 z-20">
                         <button
                             onClick={onClose}
+                            aria-label="Close detail"
                             className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors"
                         >
                             <X className="w-6 h-6" />
                         </button>
-                    </div> */}
+                    </div>
 
                     <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 -mr-16 -mt-16" />
 
@@ -66,7 +68,6 @@ export const TimelineModal: React.FC<TimelineModalProps> = ({ isOpen, onClose, e
                         </button>
                     </div>
                 </div>
-            </div>
-        </div>
+        </Modal>
     );
 };

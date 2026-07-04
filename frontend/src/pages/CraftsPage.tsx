@@ -1,18 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import craftImage from '../assets/craft.webp';
 import { Clock } from 'lucide-react';
-import { crafts } from '../data';
 import { ScrollRevealSection } from '../components/ScrollReveal';
 import { HeroOverlay } from '../components/HeroOverlay';
+import { urlFor } from '../lib/sanity';
+import { useSanityQuery } from '../hooks/useSanityQuery';
+import { useScrollY } from '../hooks/useScrollY';
+import { LoadingSection, ErrorSection, EmptySection } from '../components/DataState';
+import { usePageMeta } from '../hooks/usePageMeta';
+
+type Craft = {
+  title: string;
+  description?: string;
+  image: unknown;
+  difficulty?: string;
+  timeToLearn?: string;
+};
+
+const CRAFTS_QUERY = `*[_type == "craft"] | order(title asc){title, description, image, difficulty, timeToLearn}`;
 
 export const CraftsPage: React.FC = () => {
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  usePageMeta('Crafts', 'Traditional Kirati arts and crafts: weaving, carving, and generations of artisan knowledge.');
+  const scrollY = useScrollY();
+  const { data, loading, error, retry } = useSanityQuery<Craft[]>(CRAFTS_QUERY);
+  const crafts = data ?? [];
 
   return (
     <div className="overflow-x-hidden">
@@ -21,15 +32,13 @@ export const CraftsPage: React.FC = () => {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100 ease-out"
           style={{
-            backgroundImage: `url(${craftImage})`, // Assuming you might have a crafts image, or fallback to a generic one
+            backgroundImage: `url(${craftImage})`,
             transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0005})`
           }}
         />
-        {/* Fallback background if image is missing or just overlay */}
         <HeroOverlay />
 
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-xl">
             Sacred Arts & Crafts
           </h1>
@@ -42,33 +51,43 @@ export const CraftsPage: React.FC = () => {
       {/* Crafts Grid */}
       <section className="py-20 px-6 bg-amber-50">
         <div className="max-w-7xl mx-auto">
+          {loading && <LoadingSection label="Loading crafts" />}
+          {!loading && error && <ErrorSection onRetry={retry} />}
+          {!loading && !error && crafts.length === 0 && (
+            <EmptySection message="Craft documentation is in progress. Traditional Kirati crafts will be featured here soon." />
+          )}
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             {crafts.map((craft, index) => (
-              <ScrollRevealSection key={index} className={`delay-${index * 100}`}>
+              <ScrollRevealSection key={craft.title} className={['', 'delay-100', 'delay-200'][index % 3]}>
                 <div className="bg-white rounded-2xl shadow-lg overflow-hidden group hover:shadow-2xl transition-all duration-300 h-full flex flex-col border border-amber-100">
-                  <div className="relative h-64 overflow-hidden">
-                    <img
-                      src={craft.image}
-                      alt={craft.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    />
+                  <div className="relative h-64 overflow-hidden bg-green-100">
+                    {craft.image ? (
+                      <img
+                        src={urlFor(craft.image as Parameters<typeof urlFor>[0]).width(800).auto('format').url()}
+                        alt={craft.title}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                    ) : null}
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors duration-300" />
-                    <div className="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-md">
-                      {craft.difficulty}
-                    </div>
+                    {craft.difficulty && (
+                      <div className="absolute top-4 right-4 bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-md">
+                        {craft.difficulty}
+                      </div>
+                    )}
                   </div>
                   <div className="p-8 flex-1 flex flex-col">
                     <h3 className="text-2xl font-bold text-green-900 mb-3 group-hover:text-amber-600 transition-colors">{craft.title}</h3>
                     <p className="text-green-700 mb-6 flex-1 leading-relaxed">{craft.description}</p>
-                    <div className="flex items-center justify-between text-sm text-green-600 pt-6 border-t border-green-50">
-                      <span className="flex items-center gap-2 font-semibold">
-                        <Clock className="w-4 h-4 text-amber-500" />
-                        {craft.timeToLearn}
-                      </span>
-                      <button className="text-amber-600 font-bold hover:text-amber-700 transition-colors group-hover:translate-x-1 duration-300 flex items-center gap-1">
-                        Learn More →
-                      </button>
-                    </div>
+                    {craft.timeToLearn && (
+                      <div className="flex items-center justify-between text-sm text-green-600 pt-6 border-t border-green-50">
+                        <span className="flex items-center gap-2 font-semibold">
+                          <Clock className="w-4 h-4 text-amber-500" />
+                          {craft.timeToLearn}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </ScrollRevealSection>
@@ -77,9 +96,12 @@ export const CraftsPage: React.FC = () => {
 
           <div className="text-center mt-16">
             <ScrollRevealSection>
-              <button className="bg-amber-500 hover:bg-amber-400 text-white px-10 py-4 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                Join a Workshop
-              </button>
+              <a
+                href="mailto:pranab.rai@coss.org.in?subject=Ikirati%20Craft%20Workshop"
+                className="inline-block bg-amber-500 hover:bg-amber-400 text-white px-10 py-4 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              >
+                Ask About Workshops
+              </a>
             </ScrollRevealSection>
           </div>
         </div>

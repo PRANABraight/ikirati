@@ -1,17 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, MapPin, Users } from 'lucide-react';
-import { upcomingEvents } from '../data';
+import React from 'react';
+import festivalImage from '../assets/festival.webp';
+import { Calendar, MapPin, ExternalLink } from 'lucide-react';
 import { ScrollRevealSection } from '../components/ScrollReveal';
 import { HeroOverlay } from '../components/HeroOverlay';
+import { useSanityQuery } from '../hooks/useSanityQuery';
+import { useScrollY } from '../hooks/useScrollY';
+import { LoadingSection, ErrorSection, EmptySection } from '../components/DataState';
+import { usePageMeta } from '../hooks/usePageMeta';
+
+type CommunityEvent = {
+  title: string;
+  date: string;
+  location?: string;
+  eventType?: string;
+  description?: string;
+  link?: string;
+};
+
+const EVENTS_QUERY = `*[_type == "event" && date >= now()] | order(date asc){title, date, location, eventType, description, link}`;
+
+function formatEventDate(iso: string): string {
+  return new Date(iso).toLocaleDateString(undefined, {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
 
 export const EventsPage: React.FC = () => {
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  usePageMeta('Events', 'Upcoming Kirati community gatherings, festivals, workshops, and ceremonies.');
+  const scrollY = useScrollY();
+  const { data, loading, error, retry } = useSanityQuery<CommunityEvent[]>(EVENTS_QUERY);
+  const events = data ?? [];
 
   return (
     <div className="overflow-x-hidden">
@@ -20,14 +41,13 @@ export const EventsPage: React.FC = () => {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100 ease-out"
           style={{
-            backgroundImage: "url('https://images.pexels.com/photos/1181396/pexels-photo-1181396.jpeg?auto=compress&cs=tinysrgb&w=1600')",
+            backgroundImage: `url(${festivalImage})`,
             transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0005})`
           }}
         />
         <HeroOverlay />
 
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-xl">
             Community Gatherings
           </h1>
@@ -46,10 +66,16 @@ export const EventsPage: React.FC = () => {
             </h2>
           </ScrollRevealSection>
 
+          {loading && <LoadingSection label="Loading events" />}
+          {!loading && error && <ErrorSection onRetry={retry} />}
+          {!loading && !error && events.length === 0 && (
+            <EmptySection message="No upcoming events are scheduled right now. Check back soon, or propose one below." />
+          )}
+
           <div className="grid md:grid-cols-2 gap-8">
-            {upcomingEvents.map((event, index) => (
-              <ScrollRevealSection key={index} className={`delay-${(index % 2) * 100}`}>
-                <div className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 border border-amber-100 group">
+            {events.map((event, index) => (
+              <ScrollRevealSection key={`${event.title}-${event.date}`} className={['', 'delay-100'][index % 2]}>
+                <div className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-2xl transition-all duration-300 border border-amber-100 group h-full flex flex-col">
                   <div className="flex items-start justify-between mb-6">
                     <div className="flex items-center gap-4">
                       <div className="bg-green-100 p-4 rounded-full group-hover:bg-green-600 transition-colors duration-300">
@@ -57,72 +83,42 @@ export const EventsPage: React.FC = () => {
                       </div>
                       <div>
                         <h3 className="text-2xl font-bold text-green-900 group-hover:text-amber-600 transition-colors">{event.title}</h3>
-                        <p className="text-green-600 font-medium">{event.date}</p>
+                        <p className="text-green-600 font-medium">{formatEventDate(event.date)}</p>
                       </div>
                     </div>
-                    <span className="bg-amber-100 text-amber-800 px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wide">
-                      {event.type}
-                    </span>
+                    {event.eventType && (
+                      <span className="bg-amber-100 text-amber-800 px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wide">
+                        {event.eventType}
+                      </span>
+                    )}
                   </div>
 
-                  <div className="flex items-center gap-6 text-green-700 mb-8">
-                    <div className="flex items-center gap-2">
+                  {event.location && (
+                    <div className="flex items-center gap-2 text-green-700 mb-4">
                       <MapPin className="w-5 h-5 text-amber-500" />
                       <span className="font-medium">{event.location}</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Users className="w-5 h-5 text-amber-500" />
-                      <span className="font-medium">{event.attendees} attending</span>
-                    </div>
-                  </div>
+                  )}
 
-                  <button className="w-full bg-green-50 hover:bg-green-600 text-green-800 hover:text-white py-4 rounded-full font-bold transition-all duration-300 shadow-sm hover:shadow-md transform hover:-translate-y-1">
-                    Join Event
-                  </button>
+                  {event.description && (
+                    <p className="text-green-700 leading-relaxed mb-6 flex-1">{event.description}</p>
+                  )}
+
+                  {event.link && (
+                    <a
+                      href={event.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-auto w-full bg-green-50 hover:bg-green-600 text-green-800 hover:text-white py-4 rounded-full font-bold transition-all duration-300 shadow-sm hover:shadow-md transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                    >
+                      Event Details
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  )}
                 </div>
               </ScrollRevealSection>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Event Calendar */}
-      <section className="py-24 px-6 bg-white">
-        <div className="max-w-4xl mx-auto">
-          <ScrollRevealSection>
-            <h2 className="text-4xl font-bold text-green-900 mb-12 text-center">
-              Event Calendar
-            </h2>
-
-            <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border border-green-100">
-              <div className="text-center mb-10">
-                <h3 className="text-3xl font-bold text-green-900 mb-2">March 2024</h3>
-                <p className="text-green-600">Click on any date to see events</p>
-              </div>
-
-              <div className="grid grid-cols-7 gap-4 mb-6">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                  <div key={day} className="text-center font-bold text-green-800 py-2 uppercase tracking-wider text-sm">
-                    {day}
-                  </div>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-7 gap-4">
-                {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
-                  <button
-                    key={day}
-                    className={`aspect-square flex items-center justify-center rounded-xl transition-all duration-300 font-medium text-lg ${[15, 22].includes(day)
-                      ? 'bg-amber-500 text-white font-bold shadow-lg hover:bg-amber-600 transform hover:scale-110'
-                      : 'hover:bg-green-100 text-green-700 hover:text-green-900'
-                      }`}
-                  >
-                    {day}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </ScrollRevealSection>
         </div>
       </section>
 
@@ -138,9 +134,12 @@ export const EventsPage: React.FC = () => {
               Have an idea for a cultural event? We'd love to help you organize it
               and bring our community together.
             </p>
-            <button className="bg-amber-500 hover:bg-amber-400 text-white px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl">
+            <a
+              href="mailto:pranab.rai@coss.org.in?subject=Ikirati%20Event%20Proposal"
+              className="inline-block bg-amber-500 hover:bg-amber-400 text-white px-10 py-5 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+            >
               Propose an Event
-            </button>
+            </a>
           </ScrollRevealSection>
         </div>
       </section>

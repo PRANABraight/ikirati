@@ -4,70 +4,55 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Ikirati (Kirati Heart) — cultural heritage platform for the Kirati people (eastern Himalayas): interactive timeline, cultural archive, oral traditions/stories, community hub.
+Ikirati (Kirati Heart) — cultural heritage platform for the Kirati people (eastern Himalayas): interactive timeline, cultural archive, oral traditions/stories, elders, language, events, gallery.
 
-Monorepo, two independent npm workspaces (no shared package manager workspace config — root `package.json` just shells out):
+Monorepo, three independent npm packages (no shared workspace config — root `package.json` just shells out):
 
-- `backend/` — Express + TypeScript + MySQL (mysql2) API
-- `frontend/` — React 18 + TypeScript + Vite + Tailwind CSS
+- `frontend/` — React 18 + TypeScript + Vite + Tailwind CSS SPA. **Content comes from Sanity CMS**, fetched client-side via GROQ.
+- `studio/` — Sanity Studio v6 managing all content types (story, recipe, song, elder, vocabularyEntry, event, craft, galleryImage).
+- `backend/` — Express + TypeScript + MySQL (mysql2) API with JWT auth and a stories CRUD. **Not consumed by the frontend** — it's a standalone community API kept hardened; in production it also serves `frontend/dist` as static files.
 
 ## Commands
 
-Run from repo root (delegates into `backend/`/`frontend/` via `cd`):
+Run from repo root (delegates into packages via `cd`):
 
 ```
-npm run install:all     # install root + backend + frontend deps
-npm run dev             # run backend and frontend dev servers concurrently
-npm run build           # build frontend only (production bundle served by backend)
-npm start               # run backend in production (serves frontend/dist as static files)
+npm run install:all     # install root + backend + frontend + studio deps
+npm run dev             # backend (4000) + frontend (5173) dev servers
+npm run build           # build frontend production bundle
+npm start               # backend in production (serves frontend/dist)
+npm run lint            # eslint on backend + frontend
+npm test                # jest (backend) + vitest (frontend)
 ```
 
-Backend (`cd backend`):
-```
-npm run dev             # ts-node src/index.ts, no watch/reload
-npm run build           # tsc -> dist/
-npm start               # node dist/index.js (requires build first)
-```
+Per package: `backend/` has `dev/build/start/test/lint` (jest + supertest, eslint flat config); `frontend/` has `dev/build/lint/test/preview` (vitest + Testing Library); `studio/` has `dev/build/deploy` (studio runs at localhost:3333, no tests).
 
-Frontend (`cd frontend`):
-```
-npm run dev             # vite dev server (localhost:5173)
-npm run build           # tsc -b && vite build
-npm run lint            # eslint .
-npm run preview         # preview production build
-```
-
-No test suite exists in either package.
-
-Docs (mkdocs, `docs/` + `mkdocs.yml`, nav: Home/Backend/Frontend) build separately via mkdocs tooling, not npm.
+Docs (mkdocs, `docs/` + `mkdocs.yml`, nav: Home/Backend/Frontend/Studio) build separately via mkdocs tooling, not npm. CI (`.github/workflows/test.yml`) runs lint + test for backend and frontend on push/PR to main.
 
 ## Architecture
+
+### Frontend (`frontend/src`)
+
+- `App.tsx` — all routes lazy-loaded (`React.lazy`) inside a single `Layout`, wrapped in `ErrorBoundary`; catch-all `*` → `NotFoundPage`. Short (~800ms) branded `LoadingScreen` on mount.
+- `lib/sanity.ts` — Sanity client (`VITE_SANITY_PROJECT_ID`/`VITE_SANITY_DATASET` from env), `urlFor` (images), `urlForFile` (audio). Never expose `SANITY_API_TOKEN` via a `VITE_` var.
+- `hooks/useSanityQuery.ts` — the standard data-fetch pattern: `{data, loading, error, retry}`. Every Sanity-backed page renders `LoadingSection`/`ErrorSection`/`EmptySection` from `components/DataState.tsx` — follow this pattern for new pages.
+- `hooks/useScrollY.ts` — rAF-throttled scroll position for parallax heroes; `hooks/usePageMeta.ts` — per-page `<title>` + meta description.
+- `components/Modal.tsx` — accessible dialog primitive (focus trap, Esc, scroll lock, focus restore). `StoryModal`, `TimelineModal`, `ShareModal`, and the Gallery lightbox all build on it — new modals must too.
+- `pages/*.tsx` — one component per route. Sanity-backed: Stories, Archive, Crafts, Elders, Language, Events, Gallery. Static-data (`data/index.ts`): Home (`stories` carousel), Timeline (`timeline`).
+- Tailwind: custom animations (`fade-in`, `scale-up`, `blob`, …) are defined in `tailwind.config.js`; `@tailwindcss/typography` provides `prose`. Never build class names dynamically (`delay-${i}`) — JIT can't see them; use static class arrays or inline styles.
+- Contribution CTAs are `mailto:pranab.rai@coss.org.in` links — no form backend exists.
+
+### Studio (`studio/`)
+
+Schemas in `schemaTypes/*.ts` using `defineType`/`defineField` with `@sanity/icons`; register new types in `schemaTypes/index.ts`. Frontend pages show an empty state until documents are published.
 
 ### Backend (`backend/src`)
 
 Layered Express app, single entrypoint `index.ts`:
 
-- `index.ts` — app setup order matters: helmet (CSP) -> CORS (origin from `FRONTEND_URL`) -> `express.json()` -> general rate limiter -> routes -> static frontend serving -> SPA catch-all (`app.get('*')` serves `frontend/dist/index.html` for any non-`/api` path). In production the backend serves the built frontend directly from `../../frontend/dist`, so backend and frontend build/deploy as one unit.
-- `db.ts` — single `mysql2/promise` connection pool exported as default; `initDatabase()` runs `CREATE TABLE IF NOT EXISTS` for `users` and `stories` on every server start (no migration files/tool — schema changes are made by editing this function).
-- `routes/*.ts` — thin route definitions only; wire path + middleware chain (auth, validation) to controller functions. No logic lives here.
-- `controllers/*.ts` — request handling + validation chains (`express-validator`), calling into models.
-- `models/*.ts` — one class per table (`Story`, `User`) with static methods wrapping raw parameterized SQL via the pool. No ORM.
-- `middleware/authMiddleware.ts` — `authenticateJWT` verifies the Bearer token and attaches `req.user` (shape declared in `types.ts` via `declare global { namespace Express { interface Request { user?: AuthUser } } }`).
-- `middleware/roleMiddleware.ts` — `requireAuth` (any logged-in user) and `requireAdmin` (role === 'admin'), applied after `authenticateJWT` in route chains.
-
-Auth pattern: JWT bearer token, `role` is `'admin' | 'user'` stored on the user row; route protection = `authenticateJWT` then `requireAuth`/`requireAdmin` stacked in that order.
-
-Two rate limiters in `index.ts`: a general one on all routes, and a stricter `authLimiter` applied only to `/api/auth`.
-
-`JWT_SECRET` falls back to `'secret'` with a startup warning if unset — must be set via `.env` (see `backend/.env.example`) for anything beyond local dev.
-
-### Frontend (`frontend/src`)
-
-Standard Vite React Router SPA:
-
-- `main.tsx` -> `App.tsx` defines all routes inside a single `Layout` (`components/Layout.tsx`) wrapping `Navigation` + `Footer`.
-- `pages/*.tsx` — one component per route (Home, Stories, Crafts, Elders, Archive, Language, Events, Timeline, Gallery); pages are the unit of feature work.
-- `components/*.tsx` — shared UI: modals (`StoryModal`, `TimelineModal`, `ShareModal`), `AudioPlayer`, `ScrollReveal` (Framer Motion/ScrollReveal-based reveal-on-scroll wrapper used throughout pages), `LoadingScreen` (shown for a fixed 2.5s on app mount, see `App.tsx`).
-- `data/index.ts` — static content/data used by pages (distinct from the backend-served `stories` API — check here first before assuming content comes from the API).
-
-No frontend state management library or API client abstraction currently exists — assume direct `fetch` calls to the backend API when wiring pages to backend data.
+- `index.ts` — order matters: trust-proxy (via `TRUST_PROXY` env) → helmet CSP (no `unsafe-inline` scripts) → CORS (`FRONTEND_URL`) → `express.json()` → general rate limiter → routes (`/api/auth` with stricter `authLimiter`, `/api/stories`) → static frontend → catch-all (JSON 404 for `/api/*`, SPA index.html otherwise) → global error handler (generic 500, logs server-side).
+- `config.ts` — `getJwtSecret()`: lazy read, **exits in production** if `JWT_SECRET` unset/placeholder; dev falls back with a warning. Use it instead of reading `process.env.JWT_SECRET` directly.
+- `db.ts` — mysql2 pool; exits in production if `DB_USER`/`DB_PASSWORD` unset. `initDatabase()` runs `CREATE TABLE IF NOT EXISTS` on start (no migration tool — edit this function for schema changes).
+- `routes/*.ts` → `controllers/*.ts` (express-validator chains) → `models/*.ts` (static methods, parameterized SQL only, no ORM).
+- Auth: JWT bearer; `authenticateJWT` then `requireAuth`/`requireAdmin`. Registration always forces `role: 'user'` and returns a generic error for duplicate emails (no enumeration).
+- Tests: unit tests beside sources; route-level integration tests in `src/routes/*.test.ts` use supertest with mocked models and `JWT_SECRET` set in the test file.

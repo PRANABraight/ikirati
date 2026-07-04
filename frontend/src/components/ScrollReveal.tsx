@@ -6,7 +6,14 @@ export const useScrollReveal = () => {
 
     useEffect(() => {
         const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => setIsVisible(entry.isIntersecting));
+            entries.forEach(entry => {
+                // Reveal once and stay visible; re-hiding on scroll-out is
+                // disorienting and hurts screen-reader/find-in-page use.
+                if (entry.isIntersecting) {
+                    setIsVisible(true);
+                    observer.unobserve(entry.target);
+                }
+            });
         });
         const currentElement = domRef.current;
         if (currentElement) observer.observe(currentElement);

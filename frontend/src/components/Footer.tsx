@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mountain, Facebook, Twitter, Instagram } from 'lucide-react';
+import { Mountain } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -20,46 +20,32 @@ export const Footer: React.FC = () => {
             <p className="text-green-200 leading-relaxed mb-6">
               Preserving the rich tapestry of Kirati culture, weaving together stories, traditions, and memories for future generations.
             </p>
-            <div className="flex gap-4">
-              <a href="#" className="p-2 bg-green-800 rounded-full hover:bg-amber-500 transition-colors group">
-                <Facebook className="w-5 h-5 text-green-100 group-hover:text-white" />
-              </a>
-              <a href="#" className="p-2 bg-green-800 rounded-full hover:bg-amber-500 transition-colors group">
-                <Twitter className="w-5 h-5 text-green-100 group-hover:text-white" />
-              </a>
-              <a href="#" className="p-2 bg-green-800 rounded-full hover:bg-amber-500 transition-colors group">
-                <Instagram className="w-5 h-5 text-green-100 group-hover:text-white" />
-              </a>
-            </div>
           </div>
 
           <div>
             <h4 className="font-bold text-lg mb-6 text-amber-400">Discover</h4>
             <ul className="space-y-4 text-green-200">
-              <li><Link to="/stories" className="hover:text-white transition-colors flex items-center gap-2"><span className="w-1.5 h-1.5 bg-amber-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>Stories</Link></li>
+              <li><Link to="/stories" className="hover:text-white transition-colors">Stories</Link></li>
               <li><Link to="/timeline" className="hover:text-white transition-colors">Timeline</Link></li>
-              {/* <li><Link to="/gallery" className="hover:text-white transition-colors">Gallery</Link></li>
-              <li><Link to="/crafts" className="hover:text-white transition-colors">Crafts</Link></li> */}
+              <li><Link to="/gallery" className="hover:text-white transition-colors">Gallery</Link></li>
+              <li><Link to="/crafts" className="hover:text-white transition-colors">Crafts</Link></li>
             </ul>
           </div>
 
-          {/* <div>
+          <div>
             <h4 className="font-bold text-lg mb-6 text-amber-400">Community</h4>
             <ul className="space-y-4 text-green-200">
               <li><Link to="/events" className="hover:text-white transition-colors">Events</Link></li>
               <li><Link to="/elders" className="hover:text-white transition-colors">Elders</Link></li>
               <li><Link to="/language" className="hover:text-white transition-colors">Language</Link></li>
-              <li><a href="#" className="hover:text-white transition-colors">Volunteer</a></li>
             </ul>
-          </div> */}
+          </div>
 
           <div>
             <h4 className="font-bold text-lg mb-6 text-amber-400">Resources</h4>
             <ul className="space-y-4 text-green-200">
               <li><Link to="/archive" className="hover:text-white transition-colors">Archive</Link></li>
-              {/* <li><a href="#" className="hover:text-white transition-colors">Research</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Education</a></li>
-              <li><a href="#" className="hover:text-white transition-colors flex items-center gap-2"><Mail className="w-4 h-4" /> Contact Us</a></li> */}
+              <li><a href="mailto:pranab.rai@coss.org.in" className="hover:text-white transition-colors">Contact Us</a></li>
             </ul>
           </div>
         </div>

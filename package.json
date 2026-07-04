@@ -8,7 +8,9 @@
         "dev:frontend": "cd frontend && npm run dev",
         "build": "cd frontend && npm run build",
         "start": "cd backend && npm start",
-        "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+        "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install && cd ../studio && npm install",
+        "test": "cd backend && npm test && cd ../frontend && npm test",
+        "lint": "cd backend && npm run lint && cd ../frontend && npm run lint"
     },
     "devDependencies": {
         "@sanity/client": "^7.23.0",

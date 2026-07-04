@@ -3,8 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { body, validationResult } from 'express-validator';
 import { User } from '../models/User';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+import { getJwtSecret } from '../config';
 
 // Validation middleware
 export const registerValidation = [
@@ -30,9 +29,12 @@ export async function register(req: Request, res: Response) {
   const { email, password } = req.body;
   try {
     const existing = await User.findByEmail(email);
-    if (existing) return res.status(409).json({ error: 'User already exists' });
+    if (existing) {
+      // Generic response to avoid revealing which emails are registered
+      return res.status(400).json({ error: 'Registration failed' });
+    }
 
-    const hash = await bcrypt.hash(password, 10);
+    const hash = await bcrypt.hash(password, 12);
     const user = await User.create({ email, password: hash, role: 'user' });
 
     res.status(201).json({
@@ -63,7 +65,7 @@ export async function login(req: Request, res: Response) {
     // Include role in JWT token
     const token = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
-      JWT_SECRET,
+      getJwtSecret(),
       { expiresIn: '1d' }
     );
 

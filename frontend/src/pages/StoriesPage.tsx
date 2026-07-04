@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { BookOpen, User, Clock, ArrowRight, Quote} from 'lucide-react';
 import { ScrollRevealSection } from '../components/ScrollReveal';
 import { HeroOverlay } from '../components/HeroOverlay';
 import { StoryModal } from '../components/StoryModal';
 import danceImage from '../assets/dance.webp';
-import { sanityClient, urlFor } from '../lib/sanity';
+import { urlFor } from '../lib/sanity';
+import { useSanityQuery } from '../hooks/useSanityQuery';
+import { LoadingSection, ErrorSection, EmptySection } from '../components/DataState';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 type Legend = {
   title: string;
@@ -13,21 +16,19 @@ type Legend = {
   image: string;
 };
 
+type LegendDoc = Omit<Legend, 'image'> & { image: unknown };
+
+const LEGENDS_QUERY = `*[_type == "story" && source == "legend"]{title, text, author, image}`;
+
 export const StoriesPage: React.FC = () => {
+  usePageMeta('Stories', 'Myths, legends, and oral traditions of the Kirati people.');
   const [selectedStory, setSelectedStory] = useState<Legend | null>(null);
-  const [allStories, setAllStories] = useState<Legend[]>([]);
+  const { data, loading, error, retry } = useSanityQuery<LegendDoc[]>(LEGENDS_QUERY);
 
-  useEffect(() => {
-    sanityClient
-      .fetch<{ title: string; text: string; author?: string; image: any }[]>(
-        `*[_type == "story" && source == "legend"]{title, text, author, image}`
-      )
-      .then((docs) =>
-        setAllStories(docs.map((doc) => ({ ...doc, image: urlFor(doc.image).url() })))
-      );
-  }, []);
-
-  if (allStories.length === 0) return null;
+  const allStories: Legend[] = (data ?? []).map((doc) => ({
+    ...doc,
+    image: urlFor(doc.image as Parameters<typeof urlFor>[0]).width(1200).auto('format').url(),
+  }));
 
   return (
     <div className="overflow-x-hidden">
@@ -52,6 +53,14 @@ export const StoriesPage: React.FC = () => {
         </div>
       </section>
 
+      {loading && <LoadingSection label="Loading stories" />}
+      {!loading && error && <ErrorSection onRetry={retry} />}
+      {!loading && !error && allStories.length === 0 && (
+        <EmptySection message="Stories are coming soon. Check back as our collection of Kirati legends grows." />
+      )}
+
+      {!loading && !error && allStories.length > 0 && (
+      <>
       {/* Featured Story */}
       <section className="py-24 px-6 bg-amber-50 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 bg-amber-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 -mr-20 -mt-20"></div>
@@ -109,7 +118,7 @@ export const StoriesPage: React.FC = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {allStories.slice(1).map((story, index) => (
-              <ScrollRevealSection key={index} className={`delay-${(index % 3) * 100}`}>
+              <ScrollRevealSection key={index} className={['', 'delay-100', 'delay-200'][index % 3]}>
                 <div
                   className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-green-50 group hover:-translate-y-2 h-full flex flex-col cursor-pointer"
                   onClick={() => setSelectedStory(story)}
@@ -119,6 +128,8 @@ export const StoriesPage: React.FC = () => {
                     <img
                       src={story.image}
                       alt={story.title}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                     />
                     <div className="absolute bottom-4 left-4 right-4 z-20 flex justify-between items-end">
@@ -156,6 +167,8 @@ export const StoriesPage: React.FC = () => {
           </div>
         </div>
       </section>
+      </>
+      )}
 
       {/* Share Your Story */}
       <section className="py-24 px-6 bg-green-900 relative overflow-hidden">
@@ -169,10 +182,12 @@ export const StoriesPage: React.FC = () => {
             <p className="text-xl md:text-2xl text-green-100 mb-12 max-w-2xl mx-auto font-light leading-relaxed">
               Do you have a family legend or a personal memory to share? Help us expand our collection.
             </p>
-            {/* <button className="bg-amber-500 hover:bg-amber-400 text-white px-12 py-5 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl flex items-center gap-3 mx-auto">
-              <Share2 className="w-5 h-5" />
+            <a
+              href="mailto:pranab.rai@coss.org.in?subject=Ikirati%20Story%20Submission"
+              className="inline-block bg-amber-500 hover:bg-amber-400 text-white px-12 py-5 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
+            >
               Submit a Story
-            </button> */}
+            </a>
           </ScrollRevealSection>
         </div>
       </section>

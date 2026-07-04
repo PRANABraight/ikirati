@@ -21,16 +21,26 @@ export const Navigation: React.FC = () => {
     setIsMobileMenuOpen(false);
   }, [location]);
 
+  // Close mobile menu on Escape
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsMobileMenuOpen(false);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [isMobileMenuOpen]);
+
   const navItems = [
     { path: '/', label: 'Home' },
     { path: '/stories', label: 'Stories' },
-    // { path: '/crafts', label: 'Crafts' },
-    // { path: '/elders', label: 'Elders' },
+    { path: '/crafts', label: 'Crafts' },
+    { path: '/elders', label: 'Elders' },
     { path: '/archive', label: 'Archive' },
-    // { path: '/language', label: 'Language' },
-    // { path: '/events', label: 'Events' },
+    { path: '/language', label: 'Language' },
+    { path: '/events', label: 'Events' },
     { path: '/timeline', label: 'Timeline' },
-    // { path: '/gallery', label: 'Gallery' }
+    { path: '/gallery', label: 'Gallery' }
   ];
 
 
@@ -65,6 +75,7 @@ export const Navigation: React.FC = () => {
                 <Link
                   key={item.path}
                   to={item.path}
+                  aria-current={location.pathname === item.path ? 'page' : undefined}
                   className={`relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${location.pathname === item.path
                     ? isTransparent
                       ? 'bg-white/20 text-white'
@@ -87,6 +98,8 @@ export const Navigation: React.FC = () => {
                 : 'text-green-900 hover:bg-green-50'
                 }`}
               aria-label="Toggle menu"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               {isMobileMenuOpen ? (
                 <X className="w-5 h-5" />
@@ -100,15 +113,19 @@ export const Navigation: React.FC = () => {
 
       {/* Mobile Navigation Overlay */}
       <div
+        id="mobile-menu"
         className={`fixed inset-0 bg-green-900/95 backdrop-blur-xl z-40 lg:hidden transition-all duration-500 ease-in-out ${isMobileMenuOpen ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full pointer-events-none'
           }`}
         style={{ paddingTop: '100px' }}
+        aria-hidden={!isMobileMenuOpen}
       >
         <div className="flex flex-col items-center justify-center h-full space-y-6 p-6">
           {navItems.map((item, index) => (
             <Link
               key={item.path}
               to={item.path}
+              tabIndex={isMobileMenuOpen ? 0 : -1}
+              aria-current={location.pathname === item.path ? 'page' : undefined}
               className={`text-2xl font-bold transition-all duration-300 transform ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
                 } ${location.pathname === item.path
                   ? 'text-amber-400'
