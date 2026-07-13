@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import culturImage from '../assets/cultur.webp';
 import elderImage from '../assets/elder.jpg';
 import mountainImage from '../assets/mountain.webp';
@@ -12,16 +12,17 @@ import {
 } from 'lucide-react';
 import { stories } from '../data';
 
-import { ScrollRevealSection } from '../components/ScrollReveal';
+import { ScrollRevealSection } from '../hooks/useScrollReveal';
 import { HeroOverlay } from '../components/HeroOverlay';
-import { useScrollY } from '../hooks/useScrollY';
+import { useParallax } from '../hooks/useParallax';
 import { usePageMeta } from '../hooks/usePageMeta';
 
 export const HomePage: React.FC = () => {
   usePageMeta();
   const [currentStory, setCurrentStory] = useState(0);
   const [heroVisible, setHeroVisible] = useState(false);
-  const scrollY = useScrollY();
+  const heroBgRef = useRef<HTMLDivElement>(null);
+  useParallax(heroBgRef);
 
   useEffect(() => {
     setHeroVisible(true);
@@ -37,11 +38,9 @@ export const HomePage: React.FC = () => {
       {/* Hero Section with Parallax */}
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100 ease-out"
-          style={{
-            backgroundImage: `url(${mountainImage})`,
-            transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0005})`
-          }}
+          ref={heroBgRef}
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${mountainImage})` }}
         />
         <HeroOverlay />
 

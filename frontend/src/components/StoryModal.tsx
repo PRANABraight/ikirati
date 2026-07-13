@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, User, Clock } from 'lucide-react';
 import { Modal } from './Modal';
 
@@ -16,15 +16,23 @@ interface StoryModalProps {
     story: Story | null;
 }
 
-export const StoryModal: React.FC<StoryModalProps> = ({ isOpen, onClose, story }) => {
-    if (!isOpen || !story) return null;
+export const StoryModal: React.FC<StoryModalProps> = ({ isOpen, onClose, story: incomingStory }) => {
+    // Keep the last non-null story around while `isOpen` flips to false so the
+    // content stays on screen through Modal's GSAP close animation instead of
+    // vanishing the instant the parent clears its selected-story state.
+    const [story, setStory] = useState(incomingStory);
+    useEffect(() => {
+        if (incomingStory) setStory(incomingStory);
+    }, [incomingStory]);
+
+    if (!story) return null;
 
     return (
         <Modal
             isOpen={isOpen}
             onClose={onClose}
             label={story.title}
-            panelClassName="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] shadow-2xl transform transition-all animate-scale-up flex flex-col overflow-hidden"
+            panelClassName="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] shadow-2xl flex flex-col overflow-hidden"
         >
                 {/* Header Image */}
                 <div className="relative h-64 shrink-0">

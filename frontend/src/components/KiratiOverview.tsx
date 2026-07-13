@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollRevealSection } from "./ScrollReveal";
+import { ScrollRevealSection } from "../hooks/useScrollReveal";
 import { Users, History, BookOpen } from "lucide-react";
 
 const KiratiOverview: React.FC = () => (

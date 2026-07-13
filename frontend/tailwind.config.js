@@ -20,17 +20,9 @@ export default {
         },
       },
       keyframes: {
-        'fade-in': {
-          from: { opacity: '0' },
-          to: { opacity: '1' },
-        },
         'fade-in-up': {
           from: { opacity: '0', transform: 'translateY(20px)' },
           to: { opacity: '1', transform: 'translateY(0)' },
-        },
-        'scale-up': {
-          from: { opacity: '0', transform: 'scale(0.95)' },
-          to: { opacity: '1', transform: 'scale(1)' },
         },
         'float-slow': {
           '0%, 100%': { transform: 'translateY(0)' },
@@ -44,9 +36,7 @@ export default {
       },
       animation: {
         'bounce-slow': 'bounce 3s infinite',
-        'fade-in': 'fade-in 0.5s ease-out both',
         'fade-in-up': 'fade-in-up 0.7s ease-out both',
-        'scale-up': 'scale-up 0.3s ease-out both',
         'float-slow': 'float-slow 6s ease-in-out infinite',
         blob: 'blob 12s ease-in-out infinite',
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',

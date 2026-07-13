@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import culturImage from '../assets/cultur.webp';
 import { Download, Share2, Music, Utensils, BookOpen, ArrowRight } from 'lucide-react';
 import { ShareModal } from '../components/ShareModal';
 import { urlFor, urlForFile } from '../lib/sanity';
 import { getYouTubeId } from '../lib/youtube';
 import { useSanityQuery } from '../hooks/useSanityQuery';
-import { useScrollY } from '../hooks/useScrollY';
+import { useParallax } from '../hooks/useParallax';
 import { LoadingSection, ErrorSection, EmptySection } from '../components/DataState';
 import { usePageMeta } from '../hooks/usePageMeta';
-import { ScrollRevealSection } from '../components/ScrollReveal';
+import { ScrollRevealSection } from '../hooks/useScrollReveal';
 import { HeroOverlay } from '../components/HeroOverlay';
 import { AudioPlayer } from '../components/AudioPlayer';
 
@@ -68,7 +68,8 @@ export const ArchivePage: React.FC = () => {
   });
   // Add expanded state for each recipe card
   const [expandedIndexes, setExpandedIndexes] = useState<number[]>([]);
-  const scrollY = useScrollY();
+  const heroBgRef = useRef<HTMLDivElement>(null);
+  useParallax(heroBgRef);
 
   const handleDownload = (item: ArchiveItem, type: string) => {
     const content = `${item.name} \n\nType: ${type} \n\nContent: ${item.content} `;
@@ -104,11 +105,9 @@ export const ArchivePage: React.FC = () => {
       {/* Parallax Hero Section */}
       <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100 ease-out"
-          style={{
-            backgroundImage: `url(${culturImage})`,
-            transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0005})`
-          }}
+          ref={heroBgRef}
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${culturImage})` }}
         />
         <HeroOverlay variant="deep" />
 

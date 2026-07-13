@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Modal } from './Modal';
 
 describe('Modal', () => {
@@ -45,6 +45,29 @@ describe('Modal', () => {
     expect(onClose).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('dialog').parentElement!);
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('plays an exit animation before removing the dialog on close', async () => {
+    const { rerender } = render(
+      <Modal isOpen onClose={() => {}} label="Test dialog">
+        <p>content</p>
+      </Modal>
+    );
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    rerender(
+      <Modal isOpen={false} onClose={() => {}} label="Test dialog">
+        <p>content</p>
+      </Modal>
+    );
+
+    // Still present immediately after the isOpen flip: the close animation
+    // hasn't completed yet, so the dialog shouldn't vanish synchronously.
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).toBeNull();
+    });
   });
 
   it('locks body scroll while open and restores on close', () => {

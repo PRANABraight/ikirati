@@ -1,28 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { Mountain, BookOpen, Users, Heart, Calendar } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Mountain, BookOpen, Users, Heart, Calendar, Sword, Globe, TrendingDown } from 'lucide-react';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
 import { timeline } from '../data';
 import YalambarImage from '../assets/couple.webp';
 import KiratiOverview from '../components/KiratiOverview';
-import { ScrollRevealSection } from '../components/ScrollReveal';
+import { ScrollRevealSection } from '../hooks/useScrollReveal';
 import { TimelineModal } from '../components/TimelineModal';
 import { usePageMeta } from '../hooks/usePageMeta';
-import { useScrollY } from '../hooks/useScrollY';
+import { useParallax } from '../hooks/useParallax';
 
 export const TimelinePage: React.FC = () => {
   usePageMeta('Timeline', 'An interactive timeline of Kirati history, from ancient Himalayan settlements to the modern cultural revival.');
-  const scrollY = useScrollY();
+  const heroBgRef = useRef<HTMLDivElement>(null);
+  useParallax(heroBgRef);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [selectedEvent, setSelectedEvent] = useState<typeof timeline[0] | null>(null);
 
-  useEffect(() => {
+  useGSAP(() => {
     const timelineSection = document.getElementById('timeline-section');
-    if (timelineSection) {
-      const { top, height } = timelineSection.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-      const progress = Math.min(Math.max((windowHeight - top) / (height + windowHeight) * 100, 0), 100);
-      setScrollProgress(progress);
-    }
-  }, [scrollY]);
+    if (!timelineSection) return;
+
+    const trigger = ScrollTrigger.create({
+      trigger: timelineSection,
+      start: 'top bottom',
+      end: 'bottom top',
+      onUpdate: (self) => setScrollProgress(self.progress * 100),
+    });
+    return () => trigger.kill();
+  }, []);
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
@@ -31,6 +37,9 @@ export const TimelinePage: React.FC = () => {
       case 'Users': return <Users className="w-5 h-5" />;
       case 'Heart': return <Heart className="w-5 h-5" />;
       case 'Calendar': return <Calendar className="w-5 h-5" />;
+      case 'Sword': return <Sword className="w-5 h-5" />;
+      case 'World': return <Globe className="w-5 h-5" />;
+      case 'Decrease': return <TrendingDown className="w-5 h-5" />;
       default: return <Mountain className="w-5 h-5" />;
     }
   };
@@ -48,11 +57,9 @@ export const TimelinePage: React.FC = () => {
       {/* Parallax Hero Section */}
       <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-100 ease-out"
-          style={{
-            backgroundImage: `url(${YalambarImage})`,
-            transform: `translateY(${scrollY * 0.5}px) scale(${1 + scrollY * 0.0005})`
-          }}
+          ref={heroBgRef}
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${YalambarImage})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-green-950/90 via-green-900/70 to-amber-50" />
 

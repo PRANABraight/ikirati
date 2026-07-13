@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BookOpen, User, Clock, ArrowRight, Quote} from 'lucide-react';
-import { ScrollRevealSection } from '../components/ScrollReveal';
+import { ScrollRevealSection } from '../hooks/useScrollReveal';
 import { HeroOverlay } from '../components/HeroOverlay';
 import { StoryModal } from '../components/StoryModal';
 import danceImage from '../assets/dance.webp';

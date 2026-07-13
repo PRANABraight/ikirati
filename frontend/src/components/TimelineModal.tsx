@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar, X } from 'lucide-react';
 import { timeline } from '../data';
 import { Modal } from './Modal';
@@ -10,8 +10,20 @@ interface TimelineModalProps {
     icon: React.ReactNode;
 }
 
-export const TimelineModal: React.FC<TimelineModalProps> = ({ isOpen, onClose, event, icon }) => {
-    if (!isOpen || !event) return null;
+export const TimelineModal: React.FC<TimelineModalProps> = ({ isOpen, onClose, event: incomingEvent, icon: incomingIcon }) => {
+    // Keep the last non-null event/icon around while `isOpen` flips to false so
+    // content stays on screen through Modal's GSAP close animation instead of
+    // vanishing the instant the parent clears its selected-event state.
+    const [event, setEvent] = useState(incomingEvent);
+    const [icon, setIcon] = useState(incomingIcon);
+    useEffect(() => {
+        if (incomingEvent) {
+            setEvent(incomingEvent);
+            setIcon(incomingIcon);
+        }
+    }, [incomingEvent, incomingIcon]);
+
+    if (!event) return null;
 
     return (
         <Modal
@@ -19,7 +31,7 @@ export const TimelineModal: React.FC<TimelineModalProps> = ({ isOpen, onClose, e
             onClose={onClose}
             label={`${event.year}: ${event.event}`}
             overlayClassName="bg-green-950/80 backdrop-blur-sm"
-            panelClassName="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden animate-scale-up"
+            panelClassName="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden"
         >
                 {/* Header */}
                 <div className="relative h-48 bg-gradient-to-r from-green-900 to-green-800 p-8 flex flex-col justify-end">

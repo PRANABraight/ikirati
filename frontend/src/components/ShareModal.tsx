@@ -14,8 +14,6 @@ interface ShareModalProps {
 export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, title, content, ingredients, prep }) => {
   const [copiedOption, setCopiedOption] = useState<string | null>(null);
 
-  if (!isOpen) return null;
-
   const shareUrl = window.location.href;
   const shareText = `Check out "${title}" from our cultural heritage archive!`;
 
@@ -78,7 +76,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, title, 
       onClose={onClose}
       label={`Share ${title}`}
       overlayClassName="bg-black/60 backdrop-blur-sm"
-      panelClassName="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl transform transition-all animate-scale-up"
+      panelClassName="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl"
     >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-bold text-green-900">Share "{title}"</h3>

@@ -1,4 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { gsap } from 'gsap';
+import { useGSAP } from '@gsap/react';
+
+const prefersReducedMotion = () =>
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 interface ModalProps {
   isOpen: boolean;
@@ -22,8 +27,49 @@ export const Modal: React.FC<ModalProps> = ({
   panelClassName = '',
   children,
 }) => {
+  const overlayRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const [shouldRender, setShouldRender] = useState(isOpen);
+
+  useGSAP(() => {
+    const overlay = overlayRef.current;
+    const panel = panelRef.current;
+
+    if (isOpen) {
+      setShouldRender(true);
+      return;
+    }
+    if (!shouldRender || !overlay || !panel) return;
+
+    if (prefersReducedMotion()) {
+      setShouldRender(false);
+      return;
+    }
+
+    const tl = gsap.timeline({ onComplete: () => setShouldRender(false) });
+    tl.to(panel, { opacity: 0, scale: 0.95, duration: 0.2, ease: 'power1.in' })
+      .to(overlay, { opacity: 0, duration: 0.2, ease: 'power1.in' }, '<');
+  }, [isOpen]);
+
+  useGSAP(() => {
+    if (!isOpen || !shouldRender) return;
+    const overlay = overlayRef.current;
+    const panel = panelRef.current;
+    if (!overlay || !panel) return;
+
+    if (prefersReducedMotion()) {
+      gsap.set([overlay, panel], { opacity: 1, scale: 1 });
+      return;
+    }
+
+    gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: 'power1.out' });
+    gsap.fromTo(
+      panel,
+      { opacity: 0, scale: 0.95 },
+      { opacity: 1, scale: 1, duration: 0.3, ease: 'power2.out', delay: 0.05 }
+    );
+  }, [isOpen, shouldRender]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -66,11 +112,12 @@ export const Modal: React.FC<ModalProps> = ({
     };
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!shouldRender) return null;
 
   return (
     <div
-      className={`fixed inset-0 flex items-center justify-center z-50 p-4 animate-fade-in ${overlayClassName}`}
+      ref={overlayRef}
+      className={`fixed inset-0 flex items-center justify-center z-50 p-4 ${overlayClassName}`}
       onClick={onClose}
     >
       <div
