@@ -34,13 +34,8 @@ export const Navigation: React.FC = () => {
   const navItems = [
     { path: '/', label: 'Home' },
     { path: '/stories', label: 'Stories' },
-    // { path: '/crafts', label: 'Crafts' },
-    // { path: '/elders', label: 'Elders' },
     { path: '/archive', label: 'Archive' },
-    // { path: '/language', label: 'Language' },
-    // { path: '/events', label: 'Events' },
     { path: '/timeline', label: 'Timeline' },
-    // { path: '/gallery', label: 'Gallery' }
   ];
 
 

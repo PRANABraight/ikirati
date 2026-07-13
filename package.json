@@ -13,8 +13,6 @@
         "lint": "cd backend && npm run lint && cd ../frontend && npm run lint"
     },
     "devDependencies": {
-        "@sanity/client": "^7.23.0",
-        "concurrently": "^8.2.2",
-        "dotenv": "^17.4.2"
+        "concurrently": "^8.2.2"
     }
 }

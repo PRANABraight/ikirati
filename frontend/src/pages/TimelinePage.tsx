@@ -6,37 +6,23 @@ import KiratiOverview from '../components/KiratiOverview';
 import { ScrollRevealSection } from '../components/ScrollReveal';
 import { TimelineModal } from '../components/TimelineModal';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { useScrollY } from '../hooks/useScrollY';
 
 export const TimelinePage: React.FC = () => {
   usePageMeta('Timeline', 'An interactive timeline of Kirati history, from ancient Himalayan settlements to the modern cultural revival.');
-  const [scrollY, setScrollY] = useState(0);
+  const scrollY = useScrollY();
   const [scrollProgress, setScrollProgress] = useState(0);
   const [selectedEvent, setSelectedEvent] = useState<typeof timeline[0] | null>(null);
 
   useEffect(() => {
-    let raf = 0;
-    const handleScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        setScrollY(window.scrollY);
-
-        // Calculate scroll progress for the timeline section
-        const timelineSection = document.getElementById('timeline-section');
-        if (timelineSection) {
-          const { top, height } = timelineSection.getBoundingClientRect();
-          const windowHeight = window.innerHeight;
-          const progress = Math.min(Math.max((windowHeight - top) / (height + windowHeight) * 100, 0), 100);
-          setScrollProgress(progress);
-        }
-      });
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+    const timelineSection = document.getElementById('timeline-section');
+    if (timelineSection) {
+      const { top, height } = timelineSection.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+      const progress = Math.min(Math.max((windowHeight - top) / (height + windowHeight) * 100, 0), 100);
+      setScrollProgress(progress);
+    }
+  }, [scrollY]);
 
   const getIcon = (iconName: string) => {
     switch (iconName) {
