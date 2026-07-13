@@ -17,6 +17,21 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, title, 
   const shareUrl = window.location.href;
   const shareText = `Check out "${title}" from our cultural heritage archive!`;
 
+  // The preview only shows a truncated `content`, but ingredients/prep are
+  // part of what's being shared (e.g. a recipe) — every copy/share/email
+  // action should carry the full text, not just the description.
+  const fullContent = [
+    content,
+    ingredients && ingredients.length > 0
+      ? `Ingredients:\n${ingredients.map((ing) => `- ${ing}`).join('\n')}`
+      : null,
+    prep && prep.length > 0
+      ? `Preparation:\n${prep.map((step, idx) => `${idx + 1}. ${step}`).join('\n')}`
+      : null,
+  ]
+    .filter(Boolean)
+    .join('\n\n');
+
   const copyToClipboard = async (text: string, optionName: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -32,14 +47,14 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, title, 
       try {
         await navigator.share({
           title: title,
-          text: shareText,
+          text: `${shareText}\n\n${fullContent}`,
           url: shareUrl,
         });
       } catch (err) {
         console.error('Error sharing:', err);
       }
     } else {
-      copyToClipboard(`${shareText}\n\n${content}\n\n${shareUrl}`, 'Share');
+      copyToClipboard(`${shareText}\n\n${fullContent}\n\n${shareUrl}`, 'Share');
     }
   };
 
@@ -53,13 +68,13 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose, title, 
     {
       name: 'Copy Content',
       icon: <Copy className="w-5 h-5" />,
-      action: () => copyToClipboard(content, 'Copy Content'),
+      action: () => copyToClipboard(fullContent, 'Copy Content'),
       color: 'bg-green-100 hover:bg-green-200 text-green-800 border border-green-300'
     },
     {
       name: 'Email',
       icon: <Mail className="w-5 h-5" />,
-      action: () => window.open(`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`${shareText}\n\n${content}\n\n${shareUrl}`)}`),
+      action: () => window.open(`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(`${shareText}\n\n${fullContent}\n\n${shareUrl}`)}`),
       color: 'bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200'
     },
     {
